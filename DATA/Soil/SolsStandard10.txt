@@ -1,0 +1,2 @@
+% Numéro des 10 sols standard
+79 	 66 	 1 	 14 	 50 	 5 	 24 	 33 	 90 	 32 
