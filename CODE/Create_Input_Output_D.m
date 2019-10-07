@@ -29,10 +29,24 @@ Input.Cats = kmeans(abc',nclus, 'Distance','cityblock','Replicates',5,'MaxIter',
 
 %% Calcul des sensibilités spectrales étendues et ré-échantillonnées pour chaque bande
 Sensi=zeros(length(400:2400),Nb_Bandes);
+rededge = [];
+Wref = [];
 for i_band=1:Nb_Bandes
     Sensi(:,i_band)=interp1(Def_Base.Sensi_Capteur.(Band_Name{i_band}).Lambda, ...
         Def_Base.Sensi_Capteur.(Band_Name{i_band}).Sensi, (400:2400)','linear',0);
     Sensi(:,i_band)=Sensi(:,i_band)./sum(Sensi(:,i_band)); % normalisation des sensibilités
+    if ((min(Def_Base.Sensi_Capteur.(Band_Name{i_band}).Lambda)) >= 710 ) && ((max(Def_Base.Sensi_Capteur.(Band_Name{i_band}).Lambda)) <= 790)
+        rededge = [rededge i_band];
+        LRT =	 prospect_DB(1.5,40,8,0,0,0.01,0.005);
+        Wref = [Wref sum(sum(LRT(1:2001,2:3),2) .* Sensi(:,i_band))];
+    end
+end
+if (length(rededge)>1)
+    doDest = 1;
+else
+    doDest = 0;
+    rededge = [1]
+    Wref = [1];
 end
 
 
@@ -46,7 +60,7 @@ end
 
 %% initialisations des Input
 Input.Rho_Toc=zeros(Nb_Sims,Nb_Bandes);
-if strcmp(Def_Base.Toc_Toa,'Toa')
+if strcmp(Def_Base.Toc_Toa,'Toa')s
     Input.Rho_Toa=zeros(Nb_Sims,Nb_Bandes);
 end
 % les Output
@@ -66,6 +80,7 @@ FCOVER = zeros(Nb_Sims,1);
 FAPAR = zeros(Nb_Sims,1);
 Albedo = zeros(Nb_Sims,1);
 D = zeros(Nb_Sims,1);
+Dlin = zeros(Nb_Sims,1);
 % switch between toa or toc , mainly the same code but done to avoid if
 % statements in parallel code
 if (Debug)
@@ -89,11 +104,12 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         D(isim,1) = Dsail3(1);
         
         %  Intégration spectrale en prenant en compte la sensibilité spectrale de chaque bande
-        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        Rho = R(:,1)' * Sensi;
+        Rho_Toc(isim,:)= Rho ;
         
         %  Réflectance Toa
         if strcmp(Def_Base.Toc_Toa,'Toa')
-            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho);
         end
         
         %  fCover
@@ -110,13 +126,16 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
+        % estimate D using linear fit
+        lm = glmfit(Rho(rededge),Rho(rededge)./Wref);
+        Dest(isim,1) = lm(1)/(1-lm(2));
     elseif strcmp(Def_Base.RTM,'FLIGHT1D')
         
         %  propriétés des feuilles et du sol
         Car = Law.Cab(isim)/4;
         Ant = 0;
         Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  Réflectance du sol dans le cas lambertien
-                % LAD type for now based on mean LAD only
+        % LAD type for now based on mean LAD only
         LIDFb = 1;
         
         % point to flight directories and makre a temporary targetdir
@@ -135,11 +154,12 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         
         
         %  Intégration spectrale en prenant en compte la sensibilité spectrale de chaque bande
-        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        Rho = R(:,1)' * Sensi;
+        Rho_Toc(isim,:)= Rho ;
         
         %  Réflectance Toa
         if strcmp(Def_Base.Toc_Toa,'Toa')
-            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho);
         end
         
         %  fCover
@@ -156,6 +176,10 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
+        % estimate D using linear fit
+        lm = glmfit(Rho(rededge),Rho(rededge)./Wref);
+        Dest(isim,1) = lm(1)/(1-lm(2));
+        
         % clean up temporary directories
         delete([targetdir,'\*.*']);
         delete([targetdir,'\DATA\*.*']);
@@ -167,7 +191,7 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Car = Law.Cab(isim)/4;
         Ant = 0;
         Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  Réflectance du sol dans le cas lambertien
-                % LAD type for now based on mean LAD only
+        % LAD type for now based on mean LAD only
         LIDFb = 1;
         
         % point to flight directories and makre a temporary targetdir
@@ -186,11 +210,12 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         
         
         %  Intégration spectrale en prenant en compte la sensibilité spectrale de chaque bande
-        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        Rho = R(:,1)' * Sensi;
+        Rho_Toc(isim,:)= Rho ;
         
         %  Réflectance Toa
         if strcmp(Def_Base.Toc_Toa,'Toa')
-            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho);
         end
         
         %  fCover
@@ -206,6 +231,10 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
+        
+        % estimate D using linear fit
+        lm = glmfit(Rho(rededge),Rho(rededge)./Wref);
+        Dest(isim,1) = lm(1)/(1-lm(2));
         
         % clean up temporary directories
         delete([targetdir,'\*.*']);
@@ -227,11 +256,12 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         D(isim,1) = Dest(1);
         
         %  Intégration spectrale en prenant en compte la sensibilité spectrale de chaque bande
-        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        Rho = R(:,1)' * Sensi;
+        Rho_Toc(isim,:)= Rho ;
         
         %  Réflectance Toa
         if strcmp(Def_Base.Toc_Toa,'Toa')
-            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho);
         end
         
         %  fCover
@@ -247,6 +277,10 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
+        
+        % estimate D using linear fit
+        lm = glmfit(Rho(rededge),Rho(rededge)./Wref);
+        Dest(isim,1) = lm(1)/(1-lm(2));
     end
     
 end % fin boucle isim
@@ -260,6 +294,7 @@ Output.FCOVER = FCOVER;
 Output.FAPAR = FAPAR;
 Output.Albedo = Albedo;
 Output.D = D;
+Output.Dlin = D;
 % Output.T = T;
 %% Les autres Outputs
 Output.LAI=Law.LAI;
