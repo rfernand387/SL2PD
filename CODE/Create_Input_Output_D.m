@@ -1,5 +1,5 @@
 function [Def_Base, Input, Output]=Create_Input_Output_D(Def_Base, Law, Class,Debug)
-%% CrÈation de la base des entrÈes et sorties du RT
+%% Cr√©ation de la base des entr√©es et sorties du RT
 % Simulations GEOSAIL+SMAC (si RhoTOA)
 % Marie et Fred 03/01/2006
 % Modif Fred Septembre 2007
@@ -8,17 +8,17 @@ function [Def_Base, Input, Output]=Create_Input_Output_D(Def_Base, Law, Class,De
 
 %% Initialisations
 Nb_Sims = size(Law.LAI,1); % Nombre de simulations
-Band_Name=fieldnames(Def_Base.Sensi_Capteur);% rÈcupÈration des noms des bandes du capteur
-Nb_Bandes = size(Band_Name,1); % nombre de bandes utilisÈes
-Var_Name = Def_Base.Var_out; % les variables ‡ estimer
+Band_Name=fieldnames(Def_Base.Sensi_Capteur);% r√©cup√©ration des noms des bandes du capteur
+Nb_Bandes = size(Band_Name,1); % nombre de bandes utilis√©es
+Var_Name = Def_Base.Var_out; % les variables √† estimer
 Law.Rel_Azimuth=Law.Sun_Azimuth-Law.View_Azimuth; % Azimuth relatif
 Coef_Spe = coefspe; % chargement des coefs specifiques de PROSPECT
-Sol_Irr=irradiance(0:5:75,400:2400,0.23,0.25); % la LUT pour l'Èclairement solaire entre 0∞ et 75∞
-Law.Cw=Law.Cdm./(1-Law.Cw_Rel); % on crÈÈ la variable Cw
+Sol_Irr=irradiance(0:5:75,400:2400,0.23,0.25); % la LUT pour l'√©clairement solaire entre 0¬∞ et 75¬∞
+Law.Cw=Law.Cdm./(1-Law.Cw_Rel); % on cr√©√© la variable Cw
 
 %% cluster laws to identify blocks of input for training
 if (Debug)
-disp(['Clustering laws for Class ' num2str(Class)])
+    disp(['Clustering laws for Class ' num2str(Class)])
 end
 
 nclus = ceil(length(Law.LAI)/100);
@@ -27,16 +27,16 @@ stream = RandStream('mlfg6331_64');  % Random number stream
 options = statset('UseParallel',1,'UseSubstreams',1,'Streams',stream);
 Input.Cats = kmeans(abc',nclus, 'Distance','cityblock','Replicates',5,'MaxIter',1000,'Options',options  , 'Display','final');
 
-%% Calcul des sensibilitÈs spectrales Ètendues et rÈ-ÈchantillonnÈes pour chaque bande
+%% Calcul des sensibilit√©s spectrales √©tendues et r√©-√©chantillonn√©es pour chaque bande
 Sensi=zeros(length(400:2400),Nb_Bandes);
 for i_band=1:Nb_Bandes
-    Sensi(:,i_band)=interp1([100; Def_Base.Sensi_Capteur.(Band_Name{i_band}).Lambda; 5000], ...
-        [0; Def_Base.Sensi_Capteur.(Band_Name{i_band}).Sensi; 0], (400:2400)');
-    Sensi(:,i_band)=Sensi(:,i_band)./sum(Sensi(:,i_band)); % normalisation des sensibilitÈs
+    Sensi(:,i_band)=interp1(Def_Base.Sensi_Capteur.(Band_Name{i_band}).Lambda, ...
+        Def_Base.Sensi_Capteur.(Band_Name{i_band}).Sensi, (400:2400)','linear',0);
+    Sensi(:,i_band)=Sensi(:,i_band)./sum(Sensi(:,i_band)); % normalisation des sensibilit√©s
 end
 
 
-%% On gÈnËre aussi le fichier Coef_SMAC des coefficients SMAC pour les bandes considÈrÈes si version 'TOA'
+%% On g√©n√®re aussi le fichier Coef_SMAC des coefficients SMAC pour les bandes consid√©r√©es si version 'TOA'
 Coef_SMAC=[];
 if strcmp(Def_Base.Toc_Toa,'Toa')
     for iband=1:Nb_Bandes % boucle sur les bandes
@@ -68,17 +68,18 @@ Albedo = zeros(Nb_Sims,1);
 D = zeros(Nb_Sims,1);
 % switch between toa or toc , mainly the same code but done to avoid if
 % statements in parallel code
-if (Debug) 
+if (Debug)
     disp(['Simulating ' num2str(Nb_Sims) ' cases for Class ' num2str(Class)])
 end
-if strcmp(Def_Base.Toc_Toa,'Toa')
-   parfor isim=1:Nb_Sims % boucle sur les simulations
+lambdaref = 799;
+parfor isim=1:Nb_Sims % boucle sur les simulations
+    if strcmp(Def_Base.RTM,'sail3')
         
-        %  propriÈtÈs des feuilles et du sol
+        %  propri√©t√©s des feuilles et du sol
         Ktot = (Coef_Spe(:,4)*Law.Cab(isim) + Coef_Spe(:,5)*Law.Cw(isim) ...
             + Coef_Spe(:,3)*Law.Cdm(isim) + Coef_Spe(:,6)*Law.Cbp(isim))./Law.N(isim);
         RT = noyau(Coef_Spe(:,2),Law.N(isim),Ktot,tav(59.*pi/180,Coef_Spe(:,2))); % reflectance et transmittance des feuilles
-        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  RÈflectance du sol dans le cas lambertien
+        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  R√©flectance du sol dans le cas lambertien
         
         %  Reflectance top of canopy
         R=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(:,1),RT(:,2),Rs,Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
@@ -87,15 +88,13 @@ if strcmp(Def_Base.Toc_Toa,'Toa')
         Dsail3=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(400,1)/(RT(400,1)+RT(400,2)),RT(400,2)/(RT(400,1)+RT(400,2))-1e-4,Rs(400,:),Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
         D(isim,1) = Dsail3(1);
         
-        % T
-        %     Tsail3=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),0.0001,0.0001,Rs(300,:),Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
-        %     T(isim,1) = Tsail3(1);
-        
-        %  IntÈgration spectrale en prenant en compte la sensibilitÈ spectrale de chaque bande
+        %  Int√©gration spectrale en prenant en compte la sensibilit√© spectrale de chaque bande
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
-        %  RÈflectance Toa  
-        Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+        %  R√©flectance Toa
+        if strcmp(Def_Base.Toc_Toa,'Toa')
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+        end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -103,57 +102,155 @@ if strcmp(Def_Base.Toc_Toa,'Toa')
         % new version Richard Fernandes April 2019
         FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
         
-        %  fAPAR (black-sky ‡ 10h)
+        %  fAPAR (black-sky √† 10h)
         A=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(:,1),RT(:,2),Rs,0,Law.Sun_Zenith_FAPAR(isim),0);
         Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
-        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur intÈgrÈe entre 400 et 700 nm
+        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur int√©gr√©e entre 400 et 700 nm
         
-        %   Albedo (black-sky pour la direction de visÈe du satellite)
-        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intÈgration spectrale
+        %   Albedo (black-sky pour la direction de vis√©e du satellite)
+        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % int√©gration spectrale
+        
+    elseif strcmp(Def_Base.RTM,'FLIGHT1D')
+        
+        %  propri√©t√©s des feuilles et du sol
+        Car = Law.Cab(isim)/4;
+        Ant = 0;
+        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  R√©flectance du sol dans le cas lambertien
+                % LAD type for now based on mean LAD only
+        LIDFb = 1;
+        
+        % point to flight directories and makre a temporary targetdir
+        templatedir = '.\code\FLIGHTREVERSE';
+        targetdirmaster = '.\code\FLIGHTTARGET1';
+        targetdir = [targetdirmaster,num2str(isim)];
+        mkdir([targetdir]);
+        system(['xcopy ',templatedir,' ',targetdir,'  /e /q']);
+        
+        %  Reflectance top of canopy done in three stages due to FLIGHT
+        [ R((400:600)-399,:) D(isim,1) ] = doflightr1d(targetdir,400:600,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)])
+        [ R((1001:1600)-399,:) x ] = doflightr1d(targetdir,1001:1600,1600,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        [ R((1601:2200)-399,:) x ] = doflightr1d(targetdir,1601:2200,2200,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        
+        % For fAPAR
         
         
-    end % fin boucle isim
-else
+        %  Int√©gration spectrale en prenant en compte la sensibilit√© spectrale de chaque bande
+        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        
+        %  R√©flectance Toa
+        if strcmp(Def_Base.Toc_Toa,'Toa')
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+        end
+        
+        %  fCover
+        % old version (bug due to missing brackets scaling crown cover
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim));
+        % new version Richard Fernandes April 2019
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
+        
+        %  fAPAR (black-sky √† 10h)
+        [ A((400:700)-399,:) x ] = doflightr1d(targetdir,400:700,700,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith_FAPAR(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
+        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur int√©gr√©e entre 400 et 700 nm
+        
+        %   Albedo (black-sky pour la direction de vis√©e du satellite)
+        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % int√©gration spectrale
+        
+        % clean up temporary directories
+        delete([targetdir,'\*.*']);
+        delete([targetdir,'\DATA\*.*']);
+        delete([targetdir,'\SPEC\*.*']);
+        
+    elseif strcmp(Def_Base.RTM,'FLIGHT')
+        
+        %  propri√©t√©s des feuilles et du sol
+        Car = Law.Cab(isim)/4;
+        Ant = 0;
+        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  R√©flectance du sol dans le cas lambertien
+                % LAD type for now based on mean LAD only
+        LIDFb = 1;
+        
+        % point to flight directories and makre a temporary targetdir
+        templatedir = '.\code\FLIGHTTARGET';
+        targetdirmaster = '.\code\FLIGHTTARGET5';
+        targetdir = [targetdirmaster,num2str(isim)];
+        mkdir([targetdir]);
+        system(['xcopy ',templatedir,' ',targetdir,'  /e /q']);
+        
+        %  Reflectance top of canopy done in three stages due to FLIGHT
+        [ R((401:1000)-399,:) D(isim,1) ] = doflightr(targetdir,401:1000,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)])
+        [ R((1001:1600)-399,:) x ] = doflightr(targetdir,1001:1600,1600,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        [ R((1601:2200)-399,:) x ] = doflightr(targetdir,1601:2200,2200,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        
+        % For fAPAR
+        
+        
+        %  Int√©gration spectrale en prenant en compte la sensibilit√© spectrale de chaque bande
+        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        
+        %  R√©flectance Toa
+        if strcmp(Def_Base.Toc_Toa,'Toa')
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+        end
+        
+        %  fCover
+        % old version (bug due to missing brackets scaling crown cover
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim));
+        % new version Richard Fernandes April 2019
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
+        
+        %  fAPAR (black-sky √† 10h)
+        [ A((400:700)-399,:) x ] = doflightr(targetdir,400:700,700,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith_FAPAR(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
+        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur int√©gr√©e entre 400 et 700 nm
+        
+        %   Albedo (black-sky pour la direction de vis√©e du satellite)
+        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % int√©gration spectrale
+        
+        % clean up temporary directories
+        delete([targetdir,'\*.*']);
+        delete([targetdir,'\DATA\*.*']);
+        delete([targetdir,'\SPEC\*.*']);
+        
+    else % PROSAIL assumed
+        %  propri√©t√©s des feuilles et du sol
+        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  R√©flectance du sol dans le cas lambertien
+        Car = Law.Cab(isim)/4;
+        Ant = 0;
+        
+        %  Reflectance top of canopy
+        R=PRO4SAIL(Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Rs);
+        
+        % D
+        RsD = Rs(lambdaref-400,:);
+        Dest=PRO4SAILD(lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Rs);
+        D(isim,1) = Dest(1);
+        
+        %  Int√©gration spectrale en prenant en compte la sensibilit√© spectrale de chaque bande
+        Rho_Toc(isim,:)= R(:,1)' * Sensi;
+        
+        %  R√©flectance Toa
+        if strcmp(Def_Base.Toc_Toa,'Toa')
+            Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
+        end
+        
+        %  fCover
+        % old version (bug due to missing brackets scaling crown cover
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim));
+        % new version Richard Fernandes April 2019
+        FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
+        
+        %  fAPAR (black-sky √† 10h)
+        A=PRO4SAIL(Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith_FAPAR(isim),0,0,Rs);
+        Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
+        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur int√©gr√©e entre 400 et 700 nm
+        
+        %   Albedo (black-sky pour la direction de vis√©e du satellite)
+        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % int√©gration spectrale
+    end
     
-    parfor isim=1:Nb_Sims % boucle sur les simulations
-        
-        %  propriÈtÈs des feuilles et du sol
-        Ktot = (Coef_Spe(:,4)*Law.Cab(isim) + Coef_Spe(:,5)*Law.Cw(isim) ...
-            + Coef_Spe(:,3)*Law.Cdm(isim) + Coef_Spe(:,6)*Law.Cbp(isim))./Law.N(isim);
-        RT = noyau(Coef_Spe(:,2),Law.N(isim),Ktot,tav(59.*pi/180,Coef_Spe(:,2))); % reflectance et transmittance des feuilles
-        Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  RÈflectance du sol dans le cas lambertien
-        
-        %  Reflectance top of canopy
-        R=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(:,1),RT(:,2),Rs,Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
-        
-        % D
-        Dsail3=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(400,1)/(RT(400,1)+RT(400,2)),RT(400,2)/(RT(400,1)+RT(400,2))-1e-4,Rs(400,:),Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
-        D(isim,1) = Dsail3(1);
-        
-        % T
-        %     Tsail3=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),0.0001,0.0001,Rs(300,:),Law.View_Zenith(isim),Law.Sun_Zenith(isim),Law.Rel_Azimuth(isim));
-        %     T(isim,1) = Tsail3(1);
-        
-        %  IntÈgration spectrale en prenant en compte la sensibilitÈ spectrale de chaque bande
-        Rho_Toc(isim,:)= R(:,1)' * Sensi;
-        
-        
-        
-        %  fCover
-        % old version (bug due to missing brackets scaling crown cover
-        FCOVER(isim,1) =Law.Crown_Cover(isim).*1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim));
-        % new version Richard Fernandes April 2019
-        FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
-        
-        %  fAPAR (black-sky ‡ 10h)
-        A=sail3(Law.LAI(isim),Law.ALA(isim),Law.HsD(isim),Law.Crown_Cover(isim),RT(:,1),RT(:,2),Rs,0,Law.Sun_Zenith_FAPAR(isim),0);
-        Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
-        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur intÈgrÈe entre 400 et 700 nm
-        
-        %   Albedo (black-sky pour la direction de visÈe du satellite)
-        Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intÈgration spectrale
-    end % fin boucle isim
-end
+end % fin boucle isim
+
 
 Input.Rho_Toc = Rho_Toc;
 if strcmp(Def_Base.Toc_Toa,'Toa')
@@ -171,14 +268,14 @@ for ivar=4:length(Var_Name) % boucle sur les variables de sortie
         I=strfind(Var_Name{ivar},'_'); % indice du symbole de composition
         if isempty(I) % cas des variables simples
             Output.(Var_Name{ivar})=Law.(Var_Name{ivar});
-        else % cas des variables composÈes
+        else % cas des variables compos√©es
             Output.(Var_Name{ivar})=Law.(Var_Name{ivar}(1:I-1)).*Law.(Var_Name{ivar}(I+1:length(Var_Name{ivar})));
         end
     end
 end % fin boucle ivar
 % close(h)
 
-%% ajout du cosinus des directions du soleil et de visÈe en entrÈe
+%% ajout du cosinus des directions du soleil et de vis√©e en entr√©e
 Def_Base.Angles{1} = 'View_Zenith';
 Def_Base.Angles{2} = 'Sun_Zenith';
 Def_Base.Angles{3} = 'Rel_Azimuth';
