@@ -2,7 +2,7 @@ function [Law,Nb_Sims]=Create_Law_Var(Def_Base,Class,Soil,Law,Nb_Sims)
 % create canopy and atmosphere parameter sampling laws
 % Fred et Marie 01/08/2005
 % Modif Fred Avril 2008
-% Modif Marie septembre 2010: ajoût de la loi log normale, modification des
+% Modif Marie septembre 2010: ajoÃ»t de la loi log normale, modification des
 % contraintes sur les lois de co-distribution
 % Richard July 2019
 
@@ -47,7 +47,7 @@ end
 
 
 
-%% Génération de la loi pour les spectres de sols
+%% GÃ©nÃ©ration de la loi pour les spectres de sols
 if ( isempty(Soil))
     I_Soil=repmat(1:size(Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl,2),1,ceil(Nb_Sims./size(Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl,2)));
     dum=randperm(length(I_Soil));
@@ -101,7 +101,7 @@ for ivar = 1:Nb_Var
         if ( VarMin < VarMax )
             LbVar = min(VarMin + (Law.LAI - LbLAI)*(VarMax-VarMin)/(UbLAI-LbLAI),VarMax);
         else
-            LbVar = max(VarMin + (Law.LAI - LbLAI)*(VarMax-VarMin)/(UbLAI-LbLAI),VarMin);
+            LbVar = min(VarMax + (Law.LAI - LbLAI)*(VarMin-VarMax)/(UbLAI-LbLAI),VarMin);
         end
         
         %new upper bound
@@ -111,7 +111,7 @@ for ivar = 1:Nb_Var
         if ( VarMin < VarMax )
             UbVar = min(VarMin + (Law.LAI - LbLAI)*(VarMax-VarMin)/(UbLAI-LbLAI),VarMax);
         else
-            UbVar = min(VarMin + (Law.LAI - LbLAI)*(VarMax-VarMin)/(UbLAI-LbLAI),VarMin);
+            UbVar = min(VarMax + (Law.LAI - LbLAI)*(VarMin-VarMax)/(UbLAI-LbLAI),VarMin);
         end
         
         %squeeze range between bounds
@@ -119,11 +119,10 @@ for ivar = 1:Nb_Var
     end
 end
 
-%% Randomisation des cas simulés (pour la sélection entre les différentes bases d'apprentissage, hyper et validation)
-% on laisse les angles de côtés pour garder les conditions d'écartement du
-% hot spot r&élaisées dans Law_obs
+%% Randomisation des cas simulÃ©s (pour la sÃ©lection entre les diffÃ©rentes bases d'apprentissage, hyper et validation)
+% on laisse les angles de cÃ´tÃ©s pour garder les conditions d'Ã©cartement du
+% hot spot r&Ã©laisÃ©es dans Law_obs
 I_Rand=randperm(length(Law.LAI));
 for ivar=1:length(Var_Name)
     Law.(Var_Name{ivar})(1:Nb_Sims)=Law.(Var_Name{ivar})(I_Rand(1:Nb_Sims));
 end
-
