@@ -110,15 +110,24 @@ for ivar=1:length(Output_Name)
     %% chose best network
     [dummy Best_Res] =min(Rmse_net(:,2));
     Results.(Output_Name{ivar}).NET=NETS(Best_Res).net; % on garde le meilleur réseau
+    
+    % rmse of  training
     Estime =  Results.(Output_Name{ivar}).NET(In(:,NETS(Best_Res).net.divideParam.trainInd));
     Valid = Out(NETS(Best_Res).net.divideParam.trainInd);
     Results.(Output_Name{ivar}).RMSE(1) = sqrt(mean((Valid-Estime).^2));
+    
+    % rmse of cross validation
     Estime =  Results.(Output_Name{ivar}).NET(In(:,NETS(Best_Res).net.divideParam.valInd));
     Valid = Out(NETS(Best_Res).net.divideParam.valInd);
     Results.(Output_Name{ivar}).RMSE(2) = sqrt(mean((Valid-Estime).^2));
+    
+    % rmse of testing (this defaults to the entire input database)
+    % if you want actual independent testing use Validate.m
     Estime =  Results.(Output_Name{ivar}).NET(In(:,NETS(Best_Res).net.divideParam.testInd));
     Valid = Out(NETS(Best_Res).net.divideParam.testInd);
     Results.(Output_Name{ivar}).RMSE(3) = sqrt(mean((Valid-Estime).^2));
+    
+    % save only testing resuylts
     Perf_Theo.(Output_Name{ivar}).Estime =  Estime;
     Perf_Theo.(Output_Name{ivar}).Valid = Valid;
     

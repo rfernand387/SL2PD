@@ -7,8 +7,13 @@ function Def_Base =  Read_Canopy_Atmos(Def_Base,Class)
 % Richard July 2019
 
 %% Initialisations
-Var={'LAI' 'ALA' 'Crown_Cover' 'HsD' 'N' 'Cab' 'Cdm' 'Cw_Rel' 'Cbp' 'Bs' 'P' 'Tau550' 'H2O' 'O3'};
+Var={'LAI' 'ALA' 'Crown_Cover' 'HsD' 'N' 'Cab' 'Cdm' 'Cw_Rel' 'Cbp' 'Bs' 'Age' 'P' 'Tau550' 'H2O' 'O3'};
 Champ={'Lb' 'Ub' 'P1' 'P2' 'Nb_Classe'};
+
+
+%% NUmber of SImulations
+[x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'G17');
+Def_Base.(['Class_' num2str(Class)]).Nb_Sims = x;
 
 %% Select the class to be used												
 [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C18');
@@ -56,15 +61,12 @@ Def_Base.(['Class_' num2str(Class)]).ParentClassNumber=x;
 [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C15');
 Def_Base.(['Class_' num2str(Class)]).Mismatch_Filtering=char(y);
 
-%% NUmber of SImulations
-[x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'G16');
-Def_Base.(['Class_' num2str(Class)]).Nb_Sims = x;
 
 %% Les autres variables
 if strcmpi('TOC',Def_Base.Toc_Toa)
-    [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O11');
+    [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O12');
 else
-    [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O15');
+    [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O16');
 end
 for ivar=1:size(x,1)
     for i_Champ=1:size(Champ,2)

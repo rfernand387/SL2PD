@@ -74,8 +74,13 @@ if ( copyFlag )
                 Target2 = Target;
                 Source2 = Source;
                 % compute pairwise distances after normalizing each var
+                if strcmp(Def_Base.RTM,'sail3')
+                [Target,ts] = mapminmax(Target([1 2 5 6 7 8 9 11],:),-1,1);
+                [Source] = mapminmax.apply(Source([1 2 5  6 7 8 9 11],:),ts);
+                else
                 [Target,ts] = mapminmax(Target([1 2 5 6 7 8 9 10],:),-1,1);
                 [Source] = mapminmax.apply(Source([1 2 5  6 7 8 9 10],:),ts);
+                end
                 
                 % compute pariwise distances for nearest 10%ile samples
                 % convert distance
