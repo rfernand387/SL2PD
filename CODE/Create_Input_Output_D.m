@@ -21,11 +21,19 @@ if (Debug)
     disp(['Clustering laws for Class ' num2str(Class)])
 end
 
-nclus = ceil(length(Law.LAI)/100);
-abc = (([ Law.ALA Law.Cab Law.N Law.Cdm Law.Cw_Rel Law.Bs])');
+% Clustering in block of 50,000 samples sorted by LAI, 
+% defaulted as all unique but target is clusters of 100 sims each
+[temp sortindex] = sort(Law.LAI);
+Input.Cats = 1:length(sortindex);
+for block = 1:50000:length(sortindex)
+    blockdata = sortindex(block:min(length(sortindex),(block+50000-1)));
+    nclus = ceil(length(blockdata)/100);
+abc = (([ Law.ALA(blockdata) Law.Cab(blockdata) Law.N(blockdata) Law.Cdm(blockdata) Law.Cw_Rel(blockdata) Law.Bs(blockdata)])');
 stream = RandStream('mlfg6331_64');  % Random number stream
 options = statset('UseParallel',1,'UseSubstreams',1,'Streams',stream);
-Input.Cats = kmeans(abc',nclus, 'Distance','cityblock','Replicates',5,'MaxIter',1000,'Options',options  , 'Display','final');
+Input.Cats(blockdata) = block + kmeans(abc',nclus, 'Distance','cityblock','Replicates',5,'MaxIter',1000,'Options',options  , 'Display','final');
+end
+
 
 %% Calcul des sensibilités spectrales étendues et ré-échantillonnées pour chaque bande
 Sensi=zeros(length(400:2400),Nb_Bandes);
@@ -38,17 +46,17 @@ end
 
 %% On génère aussi le fichier Coef_SMAC des coefficients SMAC pour les bandes considérées si version 'TOA'
 Coef_SMAC=[];
-if strcmp(Def_Base.Toc_Toa,'Toa')
+%if strcmp(Def_Base.Toc_Toa,'Toa')
     for iband=1:Nb_Bandes % boucle sur les bandes
         Coef_SMAC=cat(2,Coef_SMAC,Def_Base.Sensi_Capteur.(Band_Name{iband}).Smac.Cont);
     end
-end
+%end
 
 %% initialisations des Input
 Input.Rho_Toc=zeros(Nb_Sims,Nb_Bandes);
-if strcmp(Def_Base.Toc_Toa,'Toa')
-    Input.Rho_Toa=zeros(Nb_Sims,Nb_Bandes);
-end
+%if strcmp(Def_Base.Toc_Toa,'Toa')
+Input.Rho_Toa=zeros(Nb_Sims,Nb_Bandes);
+%end
 % les Output
 for i=1:size(Var_Name,1)
     if ~strcmp(Var_Name{i},'Multi')
@@ -59,9 +67,9 @@ end
 %% SIMULATIONS
 % h=waitbar(0,'Simulating reflectances,...');
 Rho_Toc = zeros(Nb_Sims,Nb_Bandes);
-if strcmp(Def_Base.Toc_Toa,'Toa')
+%if strcmp(Def_Base.Toc_Toa,'Toa')
     Rho_Toa = zeros(Nb_Sims,Nb_Bandes);
-end
+%end
 FCOVER = zeros(Nb_Sims,1);
 FAPAR = zeros(Nb_Sims,1);
 Albedo = zeros(Nb_Sims,1);
@@ -72,7 +80,7 @@ if (Debug)
     disp(['Simulating ' num2str(Nb_Sims) ' cases for Class ' num2str(Class)])
 end
 lambdaref = 799;
-parfor isim=1:Nb_Sims % boucle sur les simulations
+for isim=1:Nb_Sims % boucle sur les simulations
     if strcmp(Def_Base.RTM,'sail3')
         
         %  propriétés des feuilles et du sol
@@ -92,9 +100,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        if strcmp(Def_Base.Toc_Toa,'Toa')
+        %if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        end
+        %end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -138,9 +146,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        if strcmp(Def_Base.Toc_Toa,'Toa')
+        %if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        end
+        %end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -189,9 +197,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        if strcmp(Def_Base.Toc_Toa,'Toa')
+        %if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        end
+        %end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -230,9 +238,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        if strcmp(Def_Base.Toc_Toa,'Toa')
+        %if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        end
+        %end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -253,9 +261,9 @@ end % fin boucle isim
 
 
 Input.Rho_Toc = Rho_Toc;
-if strcmp(Def_Base.Toc_Toa,'Toa')
+%if strcmp(Def_Base.Toc_Toa,'Toa')
     Input.Rho_Toa = Rho_Toa;
-end
+%end
 Output.FCOVER = FCOVER;
 Output.FAPAR = FAPAR;
 Output.Albedo = Albedo;
