@@ -63,11 +63,11 @@ Def_Base.(['Class_' num2str(Class)]).Mismatch_Filtering=char(y);
 
 
 %% Les autres variables
-if strcmpi('TOC',Def_Base.Toc_Toa)
-    [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O12');
-else
+%if strcmpi('TOC',Def_Base.Toc_Toa)
+ %   [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O12');
+%else
     [x,y]= xlsread([Def_Base.File_XLS '.xls'],['Canopy_Atmos_Class_' num2str(Class)],'C2:O16');
-end
+%end
 for ivar=1:size(x,1)
     for i_Champ=1:size(Champ,2)
         Def_Base.(['Class_' num2str(Class)]).Var_in.(Var{ivar}).(Champ{i_Champ})= x(ivar,i_Champ);

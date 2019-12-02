@@ -14,7 +14,9 @@ Ref=['Rho_' Def_Base.Toc_Toa]; % choix Toc ou Toa
 %Nb_Cas=length(Input.(Ref)); % Nombre de cas
 Nb_Cas=size(Input.(Ref),1); % Nombre de cas
 Nb_Band=size(Input.(Ref),2); % Nombre de bandes
-Input_Noise=Input; % on recopie Input
+Input_Noise.Cats = Input.Cats;
+Input_Noise.Angles = Input.Angles;
+
 
 %% Bruitage des valeurs de réflectance
 AI_rand = randn(Nb_Cas,1).*Def_Base.Bruit_Bandes.AI; %Création de la matrice de bruit additif indépendant

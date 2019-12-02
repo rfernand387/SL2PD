@@ -4,7 +4,7 @@ function [Output]= Predict_NNT_Sim_batch(Output_Name,Input, Results,Cats,testCat
 
 %% Initialisation
 Input_Name = fieldnames(Input);
-Input_Name = Input_Name(find(~strcmp(Input_Name,'Cats')));
+Input_Name = Input_Name(find((~strcmp(Input_Name,'Cats'))&(~strcmp(Input_Name,'D'))));
 
 % On met les Input en vecteurs
 % We do not use P if we are doing a single regression estimate only

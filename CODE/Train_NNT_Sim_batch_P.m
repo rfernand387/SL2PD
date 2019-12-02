@@ -6,6 +6,7 @@ function [Results,Perf_Theo]= Train_NNT_Sim_batch_P(outvars,Input, Output,Regres
 Input_Name = fieldnames(Input);
 Input_Name = Input_Name(find(~strcmp(Input_Name,'Cats')));
 Output_Name = fieldnames(Output);
+% subsampling regularily to limit to maxsims
 for ivar=1:length(Output_Name)
     Results.(Output_Name{ivar}).RMSE=0;
     Perf_Theo.(Output_Name{ivar}).Estime =[];
@@ -24,10 +25,11 @@ for d = 1:Num_Dclass
     for ivar=1:length(Input_Name)
         In.(Input_Name{ivar}) = Input.(Input_Name{ivar})(dindex,:);
     end
+    
     Cat = Cats(dindex);
     
     % train the networks for this range of d
-    [Resultsd,Perf_Theod]= Train_NNT_Sim_batch(outvars,In,Out,Regression,Cat,numBatches);
+    [Resultsd,Perf_Theod]= Train_NNT_Sim_batch(outvars,In,Out,Regression,Cat,numBatches,100000,[25 75]);
     
     % copy results into arry for all d, note that indices into samples are
     % no longer the same as into the global array
@@ -43,5 +45,5 @@ end
 for ivar=1:length(Output_Name)
     Results.(Output_Name{ivar}).RMSE=(Results.(Output_Name{ivar}).RMSE./sum(Results.(Output_Name{ivar}).NSAM)).^0.5; % RMSE du meilleur réseau
 end
-end
+return
 

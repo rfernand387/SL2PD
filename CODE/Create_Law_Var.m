@@ -12,7 +12,7 @@ Nb_Var=size(Var_Name,1); % nombre de variables
 
 
 %% if we are dealing with TOA we separately sample the atmosphere first
-if strcmp( Def_Base.Toc_Toa , 'Toa')
+%if strcmp( Def_Base.Toc_Toa , 'Toa')
     switch (Def_Base.(['Class_' num2str(Class)]).SamplingDesign)
         case {'LH'}
             h =  lhsdesign(Nb_Sims,4);
@@ -43,7 +43,7 @@ if strcmp( Def_Base.Toc_Toa , 'Toa')
     % reduce nb vars since we dont need atmosphere to be sampled more
     Nb_Var = Nb_Var - 4;
     
-end
+%end
 
 
 

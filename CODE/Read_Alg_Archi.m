@@ -49,7 +49,7 @@ switch Def_Base.Regression.(Def_Base.Algorithm_Name).Method
                 Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Nb_Neurons=cat(2,Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Nb_Neurons,x((icouche-1).*2+4,ivar));
             end
             Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Nb_Neurons=cat(2,Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Nb_Neurons,1); % on ajoute la couche de sortie
-            Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Transfer{Nb_Hidden+1}='purelin';
+%             Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out.(Def_Base.Var_out{ivar}).Transfer{Nb_Hidden+1}='purelin';
             
         end
         %% partitoning variable

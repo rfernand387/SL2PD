@@ -33,6 +33,7 @@ stream = RandStream('mlfg6331_64');  % Random number stream
 options = statset('UseParallel',1,'UseSubstreams',1,'Streams',stream);
 Input.Cats(blockdata) = block + kmeans(abc',nclus, 'Distance','cityblock','Replicates',5,'MaxIter',1000,'Options',options  , 'Display','final');
 end
+Input.Cats =  Input.Cats';
 
 
 %% Calcul des sensibilités spectrales étendues et ré-échantillonnées pour chaque bande
@@ -80,7 +81,7 @@ if (Debug)
     disp(['Simulating ' num2str(Nb_Sims) ' cases for Class ' num2str(Class)])
 end
 lambdaref = 799;
-for isim=1:Nb_Sims % boucle sur les simulations
+parfor isim=1:Nb_Sims % boucle sur les simulations
     if strcmp(Def_Base.RTM,'sail3')
         
         %  propriétés des feuilles et du sol
@@ -230,7 +231,7 @@ for isim=1:Nb_Sims % boucle sur les simulations
         R=PRO4SAIL(Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Rs);
         
         % D
-        RsD = Rs(lambdaref-400,:);
+        RsD = Rs(lambdaref-400,:)*0;
         Dest=PRO4SAILD(lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Rs);
         D(isim,1) = Dest(1);
         

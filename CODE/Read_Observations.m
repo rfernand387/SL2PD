@@ -51,7 +51,7 @@ for iband = 1:Nb_Bands
     Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Lambda = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).lambda;
     Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Sensi = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).sensi;
     %if strcmp(Def_Base.Toc_Toa,'Toa')
-        Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Smac.Cont = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).Smac.Cont;
+        Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Smac.Cont = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).smac.cont;
     %end
 end
 
