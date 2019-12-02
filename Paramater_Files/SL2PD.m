@@ -143,6 +143,8 @@ for Class = 1:Def_Base.Num_Classes
             save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '_inout.mat']),'-mat','Input','Output','Law' )
         end
         
+
+        
         % plot the noise free inputs and outputs for this class
         Plot_Matrix_InOut(Def_Base, Law, Input, Output,Class);
         
@@ -153,7 +155,7 @@ for Class = 1:Def_Base.Num_Classes
        
     %% calibrate and/or validate regression algorithm if requested
     Regression = Def_Base.Regression.(Def_Base.Algorithm_Name);
-    
+    Input.Cats = Input.Cats';
     try ( ~isempty(Regression.Method) )
 
         % parse regression method name
@@ -182,6 +184,9 @@ for Class = 1:Def_Base.Num_Classes
             %Determine convex hull of inputs used for this network
             Results.(Def_Base.Algorithm_Name).Input_Convex_Hull = Get_Convex_Hull(Input.(['Rho_' Def_Base.Toc_Toa]),0.01,10);
 
+            %Determine coded defintion domain of inputs used for this network
+            Results.(Def_Base.Algorithm_Name).Input_Definition_Domain = Get_Definition_Domain(Input.(['Rho_' Def_Base.Toc_Toa]));
+            
             % plot the noisy inputs amd outputs for this class and regression
 %             Plot_Matrix_InOut(Def_Base, Law, Input_Noise, Output,Class);
             
@@ -193,14 +198,17 @@ for Class = 1:Def_Base.Num_Classes
                     % Check if single or cacsading regression
                     if ( strcmp(P,'Single')  )
                         %% calibrate single regression
-                        [Results.(Def_Base.Algorithm_Name).(P),Perf_Theo.(Def_Base.Algorithm_Name).(P)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches);
-                        
+                        [Results.(Def_Base.Algorithm_Name).(P),Perf_Theo.(Def_Base.Algorithm_Name).(P)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,100000,[1 99]);
                     else
                         % calibrate cascading regression
-                        [Results.(Def_Base.Algorithm_Name).Single,Perf_Theo.(Def_Base.Algorithm_Name).Single]= Train_NNT_Sim_batch({P},Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches);
+                        [Results.(Def_Base.Algorithm_Name).Single,Perf_Theo.(Def_Base.Algorithm_Name).Single]= Train_NNT_Sim_batch({P},Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,100000,[1 99]);
                         [Pest] = Predict_NNT_Sim_batch( {P},Input_Noise, Results.(Def_Base.Algorithm_Name).Single,Input.Cats,unique(Input.Cats),[],[])';
                         Input_Noise.P = Pest.(P);
-                        Plist = (min(Input_Noise.P)):(Results.(Def_Base.Algorithm_Name).Single.(P).RMSE(3)*0.5):(max(Input_Noise.P));
+                        % use a power transform of P to determine subnet
+                        Ppow = max(0,(1-Input_Noise.P)).^1;
+                        deltaPpow = (((1-(median(Input_Noise.P)+Results.(Def_Base.Algorithm_Name).Single.(P).RMSE(3)*0.5)).^1 - (1-median(Input_Noise.P)).^1));
+                        Ppowlist = (max(Ppow)):deltaPpow:(min(Ppow));
+                        Plist = 1-Ppowlist.^1;
                         Plist(1) = min(min(Input_Noise.P),Plist(1));
                         Plist(length(Plist)) = max(max(Input_Noise.P),Plist(length(Plist)) );
                         Results.(Def_Base.Algorithm_Name).Plist = Plist;
@@ -262,7 +270,7 @@ for Class = 1:Def_Base.Num_Classes
             end
             
             % determine input out of range flag
-            [ResultsActual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name).flag]=input_out_of_range_flag_function (Input_Noise.(['Rho_' Def_Base.Toc_Toa]), Results.(Def_Base.Algorithm_Name).Input_Convex_Hull);
+            [ResultsActual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name).flag]=input_out_of_range_flag_function(Input_Noise.(['Rho_' Def_Base.Toc_Toa]), Results.(Def_Base.Algorithm_Name).Input_Convex_Hull);
    
             
             % validate and plot results
@@ -279,7 +287,7 @@ for Class = 1:Def_Base.Num_Classes
             
             % calibrate regression for each incertitude and plot results
             Cats = 1:length(Input.Angles);
-            [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5);         
+            [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5,Def_Base.Max_Sims,[0 100]);         
             Plot_Perfo_Theo(Def_Base,ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Class,[Def_Base.Algorithm_Name '-' Def_Base.Algorithm_Name  '-'  Def_Base.Validation_Name  '_Errors' ],'');
 
             % save cross validation
