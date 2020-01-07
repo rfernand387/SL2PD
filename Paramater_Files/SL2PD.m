@@ -205,12 +205,14 @@ for Class = 1:Def_Base.Num_Classes
                         [Pest] = Predict_NNT_Sim_batch( {P},Input_Noise, Results.(Def_Base.Algorithm_Name).Single,Input.Cats,unique(Input.Cats),[],[])';
                         Input_Noise.P = Pest.(P);
                         % use a power transform of P to determine subnet
-                        Ppow = max(0,(1-Input_Noise.P)).^1;
-                        deltaPpow = (((1-(median(Input_Noise.P)+Results.(Def_Base.Algorithm_Name).Single.(P).RMSE(3)*0.5)).^1 - (1-median(Input_Noise.P)).^1));
-                        Ppowlist = (max(Ppow)):deltaPpow:(min(Ppow));
-                        Plist = 1-Ppowlist.^1;
-                        Plist(1) = min(min(Input_Noise.P),Plist(1));
-                        Plist(length(Plist)) = max(max(Input_Noise.P),Plist(length(Plist)) );
+%                         Ppow = max(0,(1-Input_Noise.P)).^1;
+%                         deltaPpow = (((1-(median(Input_Noise.P)+Results.(Def_Base.Algorithm_Name).Single.(P).RMSE(3)*1)).^1 - (1-median(Input_Noise.P)).^1));
+%                         Ppowlist = (max(Ppow)):deltaPpow:(min(Ppow));
+%                         Plist = 1-Ppowlist.^1;
+%                         Plist(1) = min(0,min(Input_Noise.P,Plist(1)));
+%                         Plist(length(Plist)) = max(max(Input_Noise.P,Plist(length(Plist))),1 );
+                        % use constant intervals to determine subsets of P
+                        Plist = [0.1:0.05:0.9, 1.2 ];
                         Results.(Def_Base.Algorithm_Name).Plist = Plist;
                         [Results.(Def_Base.Algorithm_Name).(P),Perf_Theo.(Def_Base.Algorithm_Name).(P)]= Train_NNT_Sim_batch_P([Def_Base.Var_out], Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,Results.(Def_Base.Algorithm_Name).Plist);
                     end                    
@@ -283,24 +285,24 @@ for Class = 1:Def_Base.Num_Classes
             Bruit_Angles.AI = ([ 10 10 10 ] *pi/180)';
             Bruit_Angles.MD = ([ 0 0 0 ])';
             Bruit_Angles.MI = ([ 0 0 0 ])';
-            [RMSE] = getRMSE(  Def_Base.Bruit_Bandes , Bruit_Angles, Perf_Actual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name), Def_Base.Toc_Toa );
-            
-            % calibrate regression for each incertitude and plot results
-            Cats = 1:length(Input.Angles);
-            [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5,Def_Base.Max_Sims,[0 100]);         
-            Plot_Perfo_Theo(Def_Base,ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Class,[Def_Base.Algorithm_Name '-' Def_Base.Algorithm_Name  '-'  Def_Base.Validation_Name  '_Errors' ],'');
+%             [RMSE] = getRMSE(  Def_Base.Bruit_Bandes , Bruit_Angles, Perf_Actual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name), Def_Base.Toc_Toa );
+%             
+%             % calibrate regression for each incertitude and plot results
+%             Cats = 1:length(Input.Angles);
+%             [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5,Def_Base.Max_Sims,[0 100]);         
+%             Plot_Perfo_Theo(Def_Base,ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Class,[Def_Base.Algorithm_Name '-' Def_Base.Algorithm_Name  '-'  Def_Base.Validation_Name  '_Errors' ],'');
 
             % save cross validation
             try
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsActual','-append');
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual','-append');
-                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes','-append');
-                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes','-append');
+%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes','-append');
+%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes','-append');
             catch
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsActual');
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual');
-                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
-                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
+%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
+%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
             end
            
             if (Debug )
