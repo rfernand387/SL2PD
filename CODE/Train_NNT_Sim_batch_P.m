@@ -29,7 +29,7 @@ for d = 1:Num_Dclass
     Cat = Cats(dindex);
     
     % train the networks for this range of d
-    [Resultsd,Perf_Theod]= Train_NNT_Sim_batch(outvars,In,Out,Regression,Cat,numBatches,100000,[25 75]);
+    [Resultsd,Perf_Theod]= Train_NNT_Sim_batch(outvars,In,Out,Regression,Cat,numBatches,100000,[1 99]);
     
     % copy results into arry for all d, note that indices into samples are
     % no longer the same as into the global array

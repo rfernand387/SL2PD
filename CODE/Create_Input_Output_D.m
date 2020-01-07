@@ -119,7 +119,7 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
-    elseif strcmp(Def_Base.RTM,'FLIGHT1D')
+    elseif strcmp(Def_Base.RTM,'flight1d')
         
         %  propriétés des feuilles et du sol
         Car = Law.Cab(isim)/4;
@@ -130,7 +130,7 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         
         % point to flight directories and makre a temporary targetdir
         templatedir = '.\code\FLIGHTREVERSE';
-        targetdirmaster = '.\code\FLIGHTTARGET1';
+        targetdirmaster = '.\code\FLIGHTTARGET0';
         targetdir = [targetdirmaster,num2str(isim)];
         mkdir([targetdir]);
         system(['xcopy ',templatedir,' ',targetdir,'  /e /q']);
@@ -170,7 +170,7 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         delete([targetdir,'\DATA\*.*']);
         delete([targetdir,'\SPEC\*.*']);
         
-    elseif strcmp(Def_Base.RTM,'FLIGHT')
+    elseif strcmp(Def_Base.RTM,'flight')
         
         %  propriétés des feuilles et du sol
         Car = Law.Cab(isim)/4;
@@ -180,17 +180,19 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         LIDFb = 1;
         
         % point to flight directories and makre a temporary targetdir
-        templatedir = '.\code\FLIGHTTARGET';
-        targetdirmaster = '.\code\FLIGHTTARGET5';
+        templatedir = '.\code\FLIGHTFORWARD3D';
+        targetdirmaster = '.\code\FLIGHTTARGET30';
         targetdir = [targetdirmaster,num2str(isim)];
         mkdir([targetdir]);
         system(['xcopy ',templatedir,' ',targetdir,'  /e /q']);
         
-        %  Reflectance top of canopy done in three stages due to FLIGHT
-        [ R((401:1000)-399,:) D(isim,1) ] = doflightr(targetdir,401:1000,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)])
-        [ R((1001:1600)-399,:) x ] = doflightr(targetdir,1001:1600,1600,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
-        [ R((1601:2200)-399,:) x ] = doflightr(targetdir,1601:2200,2200,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
-        
+        %  Reflectance top of canopy done in  stages due to FLIGHT
+        [ R((400:999)-399,:) D(isim,1) ] = doflight(targetdir,400:999,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)])
+        A = R((400:699)-399,5);
+        [ R((1000:1599)-399,:) x ] = doflight(targetdir,1000:1599,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        [ R((1600:2199)-399,:) x ] = doflight(targetdir,1600:2199,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+        [ R((1801:2400)-399,:) x ] = doflight(targetdir,1801:2400,lambdaref,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
+       
         % For fAPAR
         
         
@@ -209,17 +211,14 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
         
         %  fAPAR (black-sky à 10h)
-        [ A((400:700)-399,:) x ] = doflightr(targetdir,400:700,700,Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),LIDFb,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith_FAPAR(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),[Def_Base.(['Class_' num2str(Class)]).R_Soil.Lambda(51:2051) Rs(:,1)]);
         Ecl=Sol_Irr(:,round(Law.Sun_Zenith(isim)./5)+1);
-        FAPAR(isim,1)  = sum(A(1:300,5).*Ecl(1:300))./sum(Ecl(1:300)); % valeur intégrée entre 400 et 700 nm
+        FAPAR(isim,1)  = sum(A.*Ecl(1:300))./sum(Ecl(1:300)); % valeur intégrée entre 400 et 700 nm
         
         %   Albedo (black-sky pour la direction de visée du satellite)
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
         % clean up temporary directories
-        delete([targetdir,'\*.*']);
-        delete([targetdir,'\DATA\*.*']);
-        delete([targetdir,'\SPEC\*.*']);
+        rmdir(targetdir,'s')
         
     else % PROSAIL assumed
         %  propriétés des feuilles et du sol
