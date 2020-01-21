@@ -211,8 +211,8 @@ for Class = 1:Def_Base.Num_Classes
 %                         Plist = 1-Ppowlist.^1;
 %                         Plist(1) = min(0,min(Input_Noise.P,Plist(1)));
 %                         Plist(length(Plist)) = max(max(Input_Noise.P,Plist(length(Plist))),1 );
-                        % use constant intervals to determine subsets of P
-                        Plist = [0.1:0.05:0.9, 1.2 ];
+                        use constant intervals to determine subsets of P
+                        Plist = [-0.1 , 0.1:0.05:0.9, 1.2 ];
                         Results.(Def_Base.Algorithm_Name).Plist = Plist;
                         [Results.(Def_Base.Algorithm_Name).(P),Perf_Theo.(Def_Base.Algorithm_Name).(P)]= Train_NNT_Sim_batch_P([Def_Base.Var_out], Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,Results.(Def_Base.Algorithm_Name).Plist);
                     end                    
@@ -258,7 +258,7 @@ for Class = 1:Def_Base.Num_Classes
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual');
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
-                if ( isempty(ResultsActual ) || isempty( Perf_Actual ) || isempty( ResultsIncertitudes) || isempty( Perf_Incertitudes ) )
+                if ( isempty(ResultsActual ) || isempty( Perf_Actual )  )
                     % force error to make the database
                     ME = MException('MyComponent:noSuchVariable', ...
                         'Variable %s not found', inputstr);
@@ -285,12 +285,12 @@ for Class = 1:Def_Base.Num_Classes
             Bruit_Angles.AI = ([ 10 10 10 ] *pi/180)';
             Bruit_Angles.MD = ([ 0 0 0 ])';
             Bruit_Angles.MI = ([ 0 0 0 ])';
-%             [RMSE] = getRMSE(  Def_Base.Bruit_Bandes , Bruit_Angles, Perf_Actual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name), Def_Base.Toc_Toa );
-%             
-%             % calibrate regression for each incertitude and plot results
-%             Cats = 1:length(Input.Angles);
-%             [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5,Def_Base.Max_Sims,[0 100]);         
-%             Plot_Perfo_Theo(Def_Base,ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Class,[Def_Base.Algorithm_Name '-' Def_Base.Algorithm_Name  '-'  Def_Base.Validation_Name  '_Errors' ],'');
+            [RMSE] = getRMSE(  Def_Base.Bruit_Bandes , Bruit_Angles, Perf_Actual.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name), Def_Base.Toc_Toa );
+            
+            % calibrate regression for each incertitude and plot results
+            Cats = 1:length(Input.Angles);
+            [ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name)]= Train_NNT_Sim_batch([Def_Base.Var_out],Input_Noise,RMSE,Regression,Cats,5,Def_Base.Max_Sims,[0 100]);         
+            Plot_Perfo_Theo(Def_Base,ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Perf_Incertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name),Class,[Def_Base.Algorithm_Name '-' Def_Base.Algorithm_Name  '-'  Def_Base.Validation_Name  '_Errors' ],'');
 
             % save cross validation
             try
