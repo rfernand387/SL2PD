@@ -218,8 +218,12 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
         % clean up temporary directories
-        rmdir(targetdir,'s')
-        
+        try {
+                rmdir(targetdir,'s')
+                }
+        catch
+            disp([targetdir ' could not be removed ']);
+        end
     else % PROSAIL assumed
         %  propriétés des feuilles et du sol
         Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  Réflectance du sol dans le cas lambertien
