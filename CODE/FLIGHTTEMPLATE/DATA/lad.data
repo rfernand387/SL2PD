@@ -1,0 +1,11 @@
+/* Planophile leaf angle distribution: */
+0.22 0.207 0.182 0.149 0.111 0.073 0.04 0.015 0.003
+
+/* Spherical leaf angle distribution: */
+0.015 0.045 0.074 0.1 0.123 0.143 0.158 0.168 0.174
+	
+/* Erectophile leaf angle distribution: */
+0.002 0.015 0.04 0.073 0.111 0.159 0.182 0.207 0.219 
+	 
+/* Spruce leaf angle distribution: */
+0.15 0.20 0.18 0.15 0.13 0.09 0.05 0.03 0.02
