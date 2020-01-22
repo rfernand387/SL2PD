@@ -1,0 +1,727 @@
+% FLIGHT SIMULATIONS
+clear all
+load inrasoil
+load barkspec
+
+% define range of vegetation parameters for simulations
+flight.canopy.LFsizelist = [0.05];			% leaf size (cm)
+flight.canopy.FCOVlist = [ 1 ];	`		% fraction crown cover (0-1)
+flight.canopy.FGRN = [ 1];				% green areaw fraction (0-1)
+flight.canopy.FSEN = [ 0];				% senescent area fraction (0-1)
+flight.canopy.FBARK = [1 - FSEN - FGRN];		% bark areaw fraction (0-1)
+flight.canopy.lailist = 0.5:0.5:10;			% LAI (dim)
+flight.canopy.Nlist = 1:(2.5-1)/5:2.5;		% N (dim)
+flight.canopy.Cmlist = 0.002:(0.02-0.002)/5:0.02;	% LMA (g.cm-2)
+flight.canopy.Cablist = 10:10:100;			% Cab (umol.cm-2)
+flight.canopy.Carlist = (8/40)*Cab;			% Car (umol.cm-2)
+flight.canopy.Cwlist = 0.01;				% EWT (cm)
+flight.canopy.Cblist	=	0.0;			% brown pigment content (arbitrary units)
+flight.canopy.LADlist = [1];				% index into LADs
+flight.canopy.LAD(1).PDF = [0.22 0.207 0.182 0.149 0.111 0.073 0.04 0.015 0.003];	% planophile
+flight.canopy.LAD(2).PDF = [0.002 0.014 0.039 0.072 0.110 0.158 0.181 0.206 0.218];	% erectophile
+flight.canopy.LAD(3).PDF = [0.015 0.045 0.074 0.1 0.123 0.143 0.158 0.168 0.174];	% spherical
+flight.canopy.LAD(4).PDF = [1 1 1 1 1 1 1 1 1]/9;					% uniform             
+ 
+% define range of geometric parameters for simulations
+flight.geometry.szalist = [0 35 70];			% SZA (deg)
+flight.geometry.vzalist = [0];				% VZA (deg)
+flight.geometry.vaalist = [0];				% VAA (deg)
+flight.geometry.saalist = [0];				% SAA (deg)
+
+% define control parameters mode (wavebands are augmented to include w=0 and w=1 a)
+flight.control.MODE	= 'r';
+flight.control.ONED_FLAG = 1;
+flight.control.WAVLENS = [ 660:1:800];
+flight.control.NO_WVBANDS = length(WAVELENS)+2;
+flight.control.NO_PHOTONS = 40000;
+flight.control.AER_OPT = -0.00001;
+flight.control.nosoilROUGH = 0;
+flight.control.specpathname = '.\SPEC\';
+flight.control.datpathname = '.\';
+
+% define structure
+FRAC_GRN = 1;
+FRAC_SEN = 0;
+FRAC_BARK = 0;
+VIEW_ZENITH  = 0;
+VIEW_AZIMUTH = 0;
+SOLAR_AZIMUTH = 0;
+
+LF_SIZE = 0.05;
+FRAC_COV = 1;
+
+tic;
+
+% do the simulations 
+for cab= flight.canopy.Cablist
+Cab = flight.canopy.Cablist (cab);
+for n = flight.canopy.Nlist
+N = flight.canopy.Nlist (n);
+for cm = flight.canopy.Cmlist	
+Cn = flight.canopy.Cmlist (cm);
+for car = flight.canopy.Carlist 
+Car = flight.canopy.Carlist (car);
+for cw = flight.canopy.Cwlist 
+Cw = flight.canopy.Cwlist (cw);
+for cb = flight.canopy.Cblist	
+Cb = flight.canopy.Cb (cb);
+
+		
+		% simulate senescent leaf reflectance and transmittance
+                LRT = prospect_5B(N,Cab*0.01,Car*0.01,Cb,Cw*0.1,Cm);
+		[temp indices] = ismember( WAVELENS,  LRT(:,1));
+		LRT = LRT(indices,1:3);
+ 		% add in a w=0 and w=1 for flight runs
+		% for w=1 we assume same LRT ratio as final WAVELENS
+		numW = length(WAVELENS);
+		LRT = [ 0 0 0 ; LRT ; 9999 LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 )) 1-LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 ))];
+                specfilename = strcat(specpathname,'sen.spec')                
+                save specfilename LRT -ascii
+
+
+		% we assume bark spectrum is correct  
+		LRT = LRTbark;          
+		[temp indices] = ismember( WAVELENS,  LRT(:,1));
+		LRT = LRT(indices,1:3);
+ 		% add in a w=0 and w=1 for flight runs
+		% for w=1 we assume same LRT ratio as final WAVELENS
+		numW = length(WAVELENS);
+		LRT = [ 0 0 0 ; LRT ; 9999 LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 )) 1-LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 ))];
+                specfilename = strcat(specpathname,'bark.spec')                
+                save specfilename LRT -ascii
+
+		% simulate green leaf reflectance and transmittance
+                LRT = prospect_5B(N,Cab,Car,Cb,Cw,Cm);
+		[temp indices] = ismember( WAVELENS,  LRT(:,1));
+		LRT = LRT(indices,1:3);
+ 		% add in a w=0 and w=1 for flight runs
+		% for w=1 we assume same LRT ratio as final WAVELENS
+		numW = length(WAVELENS);
+		LRT = [ 0 0 0 ; LRT ; 9999 LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 )) 1-LRT( numW , 2 ) ./  (LRT( numW , 2 )+LRT( numW , 3 ))];
+                specfilename = strcat(specpathname,'leaf.spec')                
+                save specfilename LRT -ascii
+
+for soil = flight.canopy.Soillist
+
+		% determine soil reflectance 
+		[temp indices] = ismember( WAVELENS,  LRT(:,1));
+        	soil = LRT(indices,1:2);
+        	soil(:,2) = inrasoil.Refl(indices,3);
+		% extrapolate soil reflectance to w=0 and w=1
+		soilmodel = lmfit(soil(:,2),LRT(:,2)+LRT(:,3));
+		soilw0 = max(0,min(1,predict(soimodel,0))); 
+		soilw1 = max(0,min(1,predict(soimodel,0))); 
+		soil = [ 0 soilw0 ; soil ; 9999 soilw1 ];
+                specfilename = strcat(specpathname,'soil.spec')                
+                save specfilename soil -ascii
+
+end
+
+
+
+
+
+for sza = flight.geometry.szalist 
+for saa = 
+for szai= 1:3
+    SOLAR_ZENITH = szalist(szai);
+    for chl = 1:8
+        for n = 1:6
+            for dry = 1:6
+
+
+load inrasoil.mat
+
+szalist = 45;
+vzalist = 0;
+soil = 0;
+soilcorrection = 0;
+runprosail=0
+MODE	= 'r';
+ONED_FLAG = 1;
+VIEW_ZENITH  = 0;
+VIEW_AZIMUTH = 0;
+SOLAR_AZIMUTH = 0;
+NO_WVBANDS = 100;
+NO_PHOTONS = 40000;
+FRAC_GRN = 1;
+FRAC_SEN = 0;
+FRAC_BARK = 0;
+nosoilROUGH = 0;
+AER_OPT = -0.00001;
+LF_SIZE = 0.05;
+FRAC_COV = 0.50;
+CROWN_SHAPE	= 'e' ;
+Exy = 0.25;
+Ez = 0.5;
+MIN_HT= 0.5;
+MAX_HT = 1;
+Total = 0.1;
+DBH = 0;		
+specpathname = 'F:\2_flight08\SPEC\';
+datpathname = 'F:\2_flight08\';
+tic;
+reindex = (700:799)-399;
+%%
+
+for n = 1:length(Nlist)
+    N = Nlist(n);
+    for chl = 1:length(chllist)
+        Cab = chllist(chl);
+        Car = Cab/4;
+        LRT= prospect_5B(N,Cab,Car,Cbrown,Cw,Cm);
+         % add in a w=1 for flight runs
+%          
+%          LRT = LRT(reindex,1:3)
+%         LRT(length(LRT),2) = LRT(91,2)./(LRT(91,2)+LRT(91,3));
+%         LRT(length(LRT),3) = 1-LRT(length(LRT),2)-1e-5;
+%         soil = LRT(:,1:2);
+%         bark = LRT(:,1:2);
+%         sen = LRT;
+%         soil(:,2) = LRT(:,2)*0;
+
+         LRT = LRT(reindex,1:3)
+                 LRT(1,2) = 1e-2*LRT(91,2)./(LRT(91,2)+LRT(91,3));
+        LRT(1,3) = 1e-2*LRT(91,3)./(LRT(91,3)+LRT(91,2))
+        LRT(length(LRT),2) = LRT(91,2)./(LRT(91,2)+LRT(91,3));
+        LRT(length(LRT),3) = 1-LRT(length(LRT),2)-1e-5;
+
+        
+                
+                % canopy w = 0 to 1 comment out if not needed
+%          zeta = LRT(:,2) ./ (LRT(:,2) + LRT(:,3));
+%         LRT(:,2) = ((0:1:99)/100)'.*zeta;
+%         LRT(length(LRT),2) = 1*zeta(100);
+%         LRT(:,3) = ((0:1:99)/100)'-LRT(:,2);
+%         soil = LRT(:,1:2);
+%         bark = LRT(:,1:2);
+%         sen = LRT;
+%         soil(:,2) = LRT(:,2)*0;   
+        
+        
+        % run all models
+        for lad = 1:4
+            %flight
+            if ( lad == 1 )
+
+            end
+            for lai = 1:length(lailist)
+                 TOTAL_LAI = lailist(lai);
+                LAI = lailist(lai);
+                for sza = 1:length(szalist)
+                    SZA = szalist(sza)
+                    for vza = 1:length(vzalist)
+                        VZA = vzalist(vza);
+                 
+                        % write in_flight.dat file
+                        olddir = cd(datpathname);
+                        save '.\SPEC\leaf.spec' LRT -ascii
+                        save '.\SPEC\bark.spec' bark -ascii
+                        save '.\SPEC\soil.spec' soil -ascii
+                        save '.\SPEC\sen.spec' sen -ascii
+                        
+
+                        SOLAR_ZENITH = SZA;
+                        VIEW_ZENITH = VZA;
+                        SOLAR_AZIMUTH = 0;
+                        VIEW_AZIMUTH = 0;
+                        
+                        dry = 1;
+                        datfilename = strcat(datpathname,'flightsza',num2str(SOLAR_ZENITH),'chl',num2str(chl),'n',num2str(N),'lai',num2str(lai),'dry',num2str(dry),'.data')
+                        fdat = fopen(datfilename,'w');
+                        fprintf(fdat,'%s\n',MODE);
+                        fprintf(fdat,'%d\n',ONED_FLAG);
+                        fprintf(fdat,'%f,%f\n',SOLAR_ZENITH,VIEW_ZENITH);
+                        fprintf(fdat,'%f,%f\n',SOLAR_AZIMUTH,VIEW_AZIMUTH);
+                        fprintf(fdat,'%d\n',NO_WVBANDS);
+                        fprintf(fdat,'%d\n',NO_PHOTONS);
+                        fprintf(fdat,'%f\n',TOTAL_LAI);
+                        fprintf(fdat,'%f %f %f\n',FRAC_GRN,FRAC_SEN,FRAC_BARK);
+                        fprintf(fdat,'%f %f %f %f %f %f %f %f %f\n',LAD(1),LAD(2),LAD(3),LAD(4),LAD(5),LAD(6),LAD(7),LAD(8),LAD(9));
+                        fprintf(fdat,'%f\n',nosoilROUGH);
+                        fprintf(fdat,'%f\n',AER_OPT);
+                        fprintf(fdat,'%f\n',LF_SIZE);
+                        fprintf(fdat,'%f\n',FRAC_COV);
+                        fprintf(fdat,'%s\n',CROWN_SHAPE);
+                        fprintf(fdat,'%f , %f\n',Exy,Ez);
+                        fprintf(fdat,'%f , %f\n',MIN_HT,MAX_HT);
+                        fprintf(fdat,'%f\n',Total);
+                        fprintf(fdat,'%f\n',DBH);
+
+                        fclose(fdat);
+                        system(['copy ',datfilename,' .\in_flight.data']);
+                        
+
+                        % execute flight
+                        system(strcat('F:\2_flight08\fly.bat'));
+
+        
+                        % copy output file - since the name is complext we need
+                        % to determine it
+                        dirlist = dir('.\RESULTS\*.log');
+                        % Initialize variables.
+                        filename = strcat('.\RESULTS\',dirlist(1).name);
+                        startRow = 2;
+                        
+                        % Format string for each line of text:
+                        %   column1: double (%f)
+                        %	column2: double (%f)
+                        %   column3: double (%f)
+                        % For more information, see the TEXTSCAN documentation.
+                        formatSpec = '%4f%8f%f%[^\n\r]';
+                        
+                        % Open the text file.
+                        fileID = fopen(filename,'r');
+                        
+                        % Read columns of data according to format string.
+                        % This call is based on the structure of the file used to generate this
+                        % code. If an error occurs for a different file, try regenerating the code
+                        % from the Import Tool.
+                        textscan(fileID, '%[^\n\r]', startRow-1, 'ReturnOnError', false);
+                        dataArray = textscan(fileID, formatSpec, 'Delimiter', '', 'WhiteSpace', '', 'EmptyValue' ,NaN,'ReturnOnError', false);
+                        
+                        % Close the text file.
+                        fclose(fileID);
+                        
+                        % Post processing for unimportable data.
+                        % No unimportable data rules were applied during the import, so no post
+                        % processing code is included. To generate code which works for
+                        % unimportable data, select unimportable cells in a file and regenerate the
+                        % script.
+                        
+                        % Allocate imported array to column variable names
+                        Num = dataArray{:, 1};
+                        oWave = dataArray{:, 2};
+                        nmRf = dataArray{:, 3};
+                        
+                        % Clear temporary variables
+                        clearvars startRow formatSpec fileID dataArray ans;
+                        
+                        
+                        % the imported data is in the array Rf, copy it into master result array
+                        result = nmRf;
+                        %delete the file
+                        delete(filename)
+                        delete('flight*.data')
+
+                        cd(olddir);
+                        
+                        
+                        % estimate D
+                        flight(lad,n,chl,lai,sza,vza).result.brf = result(1:99) ;
+                        flight(lad,n,chl,lai,sza,vza).D =result(100);
+                        
+ 
+                        flight(lad,n,chl,lai,sza,vza).N = N;
+                         flight(lad,n,chl,lai,sza,vza).LAI = TOTAL_LAI;
+                         flight(lad,n,chl,lai,sza,vza).Cab = Cab;
+                    end
+                end
+            end
+        end
+    end
+end
+
+
+%% reference flight  simuations 
+for lad = 1:4
+    lad
+    if lad == 1
+        LIDFa = 1;
+        LIDFb = 0; %	Planophile
+    elseif lad == 2
+        LIDFa = -1;
+        LIDFb = 0; %	Erectophile
+    elseif lad == 3
+        LIDFa = -0.35;
+        LIDFb = -0.15; %	Spherical
+    else
+        LIDFa = 0;
+        LIDFb = 0; %	Uniform
+    end
+    
+    for n = 1:length(Nlist)
+        N = Nlist(n)
+        
+        % estimate reference leaf albedo
+        LRTs= prospect_5B(N,1000,250,0,100,0);
+        LRTs(:,1) = 0 * LRTs(:,1); % remove index to allow subtraction later
+        LRTref = prospect_5B(N,40,10,Cbrown,Cw,Cm);
+        LRTref(:,2:3) = LRTref(:,2:3) - LRTs(:,2:3) ;
+        
+        for chl = 1:length(chllist)
+            Cab = chllist(chl);
+            Car = Cab/4;
+            
+             LRT= prospect_5B(N,Cab,Car,Cbrown,Cw,Cm);
+         % add in a w=1 for flight runs
+         
+         LRT = LRT(reindex,1:3);
+        LRT(1,2) = 1e-2*LRT(91,2)./(LRT(91,2)+LRT(91,3));
+        LRT(1,3) = 1e-2*LRT(91,3)./(LRT(91,3)+LRT(91,2));
+        LRT(length(LRT),2) = LRT(91,2)./(LRT(91,2)+LRT(91,3));
+        LRT(length(LRT),3) = 1-LRT(length(LRT),2)-1e-5;
+        
+            for lai = 1:length(lailist)
+                LAI = lailist(lai);
+                
+                for sza = 1:length(szalist)
+                    tts = szalist(sza);
+                    
+                    for vza = 1:length(vzalist)
+                        tto = vzalist(vza);
+                        
+                        %  extract quantities from simulations and prospect
+                        %  runs
+                        flight(lad,n,chl,lai,sza,vza).result.rho = LRT(:,2);
+                        flight(lad,n,chl,lai,sza,vza).result.tau = LRT(:,3);
+                          brf = flight(lad,n,chl,lai,sza,vza).result.brf  ;
+                         flight(lad,n,chl,lai,sza,vza).rho =  flight(lad,n,chl,lai,sza,vza).result.rho;
+                         flight(lad,n,chl,lai,sza,vza).tau = flight(lad,n,chl,lai,sza,vza).result.tau;
+                         rho = flight(lad,n,chl,lai,sza,vza).rho;
+                         tau= flight(lad,n,chl,lai,sza,vza).tau;
+                         w = flight(lad,n,chl,lai,sza,vza).rho  + flight(lad,n,chl,lai,sza,vza).tau ;
+                         ioq1w =  flight(lad,n,chl,lai,sza,vza).result.brf(1).*w(1:99)/w(1) .* 1.1 .* ((rho(1:99)./w(1:99))./(LRT(1,2)./w(1)));
+                         flight(lad,n,chl,lai,sza,vza).zeta= flight(lad,n,chl,lai,sza,vza).result.rho ./ w;
+                         flight(lad,n,chl,lai,sza,vza).pe = (1-  ioq1w ./brf)./w(1:99);
+                        flight(lad,n,chl,lai,sza,vza).N = N;
+                        flight(lad,n,chl,lai,sza,vza).LAI = LAI;
+                        flight(lad,n,chl,lai,sza,vza).Cab = Cab;
+                        flight(lad,n,chl,lai,sza,vza).lambda = 1:2101; 
+
+                         
+          
+                        
+
+                    end
+                end
+            end
+        end
+    end
+end
+%% specify bands for each estimator
+for dummy = 1
+reindex = 11:91; % index 710nm to 790nm for flight
+specindex = 11:248; % index 710nm to 947nm for flight
+chrisindex = round( [
+    706
+    712
+    718
+    724
+    731
+    738
+    744
+    751
+    758
+    765
+    772
+    783
+    795
+    803
+    866
+    884
+    898
+    908
+    917
+    927
+    942
+    957
+    968
+    978
+    989
+    999
+    1021])-699;
+olciindex = round( [
+    708.75
+    753.75
+    778.75
+    865
+    885
+    900])-699;
+msiindex = round( [
+    703.9
+    740.2
+    782.5
+    835.1
+    864.8])-699;
+calmitindex = round( [
+    710
+    720
+    730
+    740
+    750
+    770
+    780
+    790
+    800
+    810
+    820
+    830
+    840
+    850
+    860
+    870
+    880
+    890
+    900])-699;
+casiindex = round([
+    709.25946
+    716.864685
+    724.474548
+    732.088867
+    739.707825
+    747.331177
+    754.959106
+    770.228394
+    777.869751
+    785.515564
+    793.165771
+    800.820496
+    808.479614
+    816.143127
+    823.811035
+    831.483276
+    839.159912
+    846.840942
+    854.526306
+    862.216003
+    869.910034
+    877.608337
+    885.310913
+    893.017822
+    900.729004
+    908.444397
+    916.164063
+    923.888
+    931.61615
+    939.348511
+    947.085022
+    ])-699;
+
+end
+
+
+%% specify reference w
+clear w
+for n = 1:length(Nlist)
+    N = Nlist(n);
+    LRTs= prospect_5B(N,1000,250,0,100,0);
+    LRTs= 0 * LRTs; % remove index to allow subtraction later
+    for chl = 1:length(chllist)
+        
+        Cab = chllist(chl);
+        Car = Cab/4;
+        LRT = prospect_5B(N,Cab,Car,Cbrown,Cw,Cm);
+        
+        LRTref(:,2:3) = LRT(:,2:3)  - LRTs(:,2:3) ;
+        w(n,chl,:) = LRTref(:,2)+LRTref(:,3);
+    end
+end
+
+%% make estimates of D
+for lad = 1:4
+    lad
+    for lai = 1:length(lailist)
+        lai
+        for sza = 1:length(szalist)
+            for vza = 1:length(vzalist)
+                for n = 2:length(Nlist)
+                    
+                    for chl = 1:length(chllist)
+                        brf =  flight(lad,n,chl,lai,sza,vza).result.brf;
+                        brf = brf(reindex);
+                        % estimate D using polynomial linear regression of of R vs w0
+                        
+                        for dummy = 1
+                            for cindex = 1:10
+                                % high order at wstar=1
+%                                 w0 = squeeze(w(n,cindex,:));
+%                                 w0 = w0(reindex+300);
+%                                 wstar = 1;
+%                                 w0 = (w0 - wstar);                                
+%                                 flight(lad,n,chl,lai,sza,vza).re.lmcindex = cindex;
+%                                 flight(lad,n,chl,lai,sza,vza).re.poly2 = fitlm([w0 brf],brf,'y~1+x1+x1*x2+x1^2*x2-x2^2');                              
+%                                 a3 = flight(lad,n,chl,lai,sza,vza).re.poly2.Coefficients{4,1};
+%                                 a2 = flight(lad,n,chl,lai,sza,vza).re.poly2.Coefficients{3,1};
+%                                 a1 = flight(lad,n,chl,lai,sza,vza).re.poly2.Coefficients{2,1};
+%                                 a0 = flight(lad,n,chl,lai,sza,vza).re.poly2.Coefficients{1,1};
+%                                 flight(lad,n,chl,lai,sza,vza).root2(cindex) = min( roots([a3*(1-wstar) , (a2*(1-wstar)-1) , (a0+a1*(1-wstar))]));
+%                                 flight(lad,n,chl,lai,sza,vza).poly2rmse(cindex) = flight(lad,n,chl,lai,sza,vza).re.poly2.RMSE;                             
+%                                 flight(lad,n,chl,lai,sza,vza).poly2a0(cindex)  =  a0 ;
+%                                 flight(lad,n,chl,lai,sza,vza).poly2a1(cindex)  =  a1 ;
+%                                 flight(lad,n,chl,lai,sza,vza).poly2a2(cindex)  =  a2 ;
+%                                 flight(lad,n,chl,lai,sza,vza).poly2a3(cindex)  =  a3 ;
+%                                 
+%                                 flight(lad,n,chl,lai,sza,vza).re.poly1 = fitlm([w0 brf],brf,'y~1+x1+x1*x2-x2');
+%                                 flight(lad,n,chl,lai,sza,vza).poly1rmse(cindex) = flight(lad,n,chl,lai,sza,vza).re.poly1.RMSE;                                
+%                                 a1 = flight(lad,n,chl,lai,sza,vza).re.poly1.Coefficients{2,1};
+%                                 a0 = flight(lad,n,chl,lai,sza,vza).re.poly1.Coefficients{1,1};
+%                                 flight(lad,n,chl,lai,sza,vza).root1(cindex) = min( roots([ (a2*(1-wstar)-1) , (a0+a1*(1-wstar))]));
+%                                 flight(lad,n,chl,lai,sza,vza).poly1a0(cindex)  =  a0 ;
+%                                 flight(lad,n,chl,lai,sza,vza).poly1a1(cindex)  =  a1 ;
+                                
+                                % low order at wstar=0
+                                w0 = squeeze(w(n,cindex,:));
+                                w0 = w0(reindex+300);
+                                wstar = 0;
+                                w0 = (w0 - wstar);
+                                flight(lad,n,chl,lai,sza,vza).re.polyk = fitlm(brf,brf./w0,'y~x1');
+                                a1 = flight(lad,n,chl,lai,sza,vza).re.polyk.Coefficients{2,1};
+                                a0 = flight(lad,n,chl,lai,sza,vza).re.polyk.Coefficients{1,1};
+                                flight(lad,n,chl,lai,sza,vza).valkrmse(cindex) = flight(lad,n,chl,lai,sza,vza).re.polyk.RMSE;
+                                flight(lad,n,chl,lai,sza,vza).vala0(cindex)  =  a0 ;
+                                flight(lad,n,chl,lai,sza,vza).vala1(cindex)  =  a1 ;
+                                flight(lad,n,chl,lai,sza,vza).valk(cindex)  =  a0 ./ (1- a1);
+                                w0 = squeeze(w(n,cindex,:));
+                                
+%                                 % high order at wstar=1
+%                                 w0 = w0(reindex+300);
+%                                 wstar = 1;
+%                                 w0 = (w0 - wstar);
+%                                 flight(lad,n,chl,lai,sza,vza).re.polyk2 = fitlm(brf,brf./w0,'y~x1');
+%                                 a1 = flight(lad,n,chl,lai,sza,vza).re.polyk2.Coefficients{2,1};
+%                                 a0 = flight(lad,n,chl,lai,sza,vza).re.polyk2.Coefficients{1,1};
+%                                 flight(lad,n,chl,lai,sza,vza).valk2rmse(cindex) = flight(lad,n,chl,lai,sza,vza).re.polyk2.RMSE;
+%                                 flight(lad,n,chl,lai,sza,vza).valk2(cindex)  =  -a0 ./  a1;
+                            end
+                            
+%                             aa = flight(lad,n,chl,lai,sza,vza).poly2a0;
+%                             bb = flight(lad,n,chl,lai,sza,vza).poly2rmse;
+%                             % find max rmse for non negative solutions
+%                             rmsemax = find(bb==max(bb(aa>=0)));
+%                             % find median rmse for non negative solutions
+%                             dd = sort(bb(aa>=0));
+%                             rmsemedian = find(bb==dd(max(min(round(length(dd)*0.5),length(dd)),1) ),1,'first');
+%                             % identify range of chl that spans one end to the max and includes median
+%                             rmsemin1 = find(bb==min(bb(1:rmsemax)+1e10*(bb(1:rmsemax)<=0)));
+%                             rmsemin2 = find(bb==min(bb(rmsemax:length(bb)+1e10*(bb(1:rmsemax)<=0))));
+%                             flight(lad,n,chl,lai,sza,vza).poly2cindex1 = max(1,min(10,round((rmsemax+rmsemin1)*0.5)));
+%                             flight(lad,n,chl,lai,sza,vza).poly2cindex2 = max(1,min(10,round((rmsemax+rmsemin2)*0.5)));
+                            
+                            aa = flight(lad,n,chl,lai,sza,vza).valk;
+                            bb = flight(lad,n,chl,lai,sza,vza).valkrmse;
+                            % find max rmse for non negative solutions
+                            rmsemax = find(bb==max(bb(aa>=0)));
+                            % find median rmse for non negative solutions
+                            dd = sort(bb(aa>=0));
+                            rmsemedian = find(bb==dd(max(min(round(length(dd)*0.5),length(dd)),1) ),1,'first');
+                            % identify range of chl that spans one end to the max and includes median
+                            if ( rmsemedian <= rmsemax)
+                                rmsemin = find(bb==min(bb(1:rmsemax)+1e10*(bb(1:rmsemax)<=0)));
+                            else
+                                rmsemin = find(bb==min(bb(rmsemax:length(bb)+1e10*(bb(1:rmsemax)<=0))));
+                            end
+                            flight(lad,n,chl,lai,sza,vza).poly1cindex = rmsemin;
+                            
+                            aa = flight(lad,n,chl,lai,sza,vza).valk2;
+                            bb = flight(lad,n,chl,lai,sza,vza).valk2rmse;
+                            % find max rmse for non negative solutions
+                            rmsemax = find(bb==max(bb(aa>=0)));
+                            % find median rmse for non negative solutions
+                            dd = sort(bb(aa>=0));
+                            rmsemedian = find(bb==dd(max(min(round(length(dd)*0.5),length(dd)),1) ),1,'first');
+                            % identify range of chl that spans one end to the max and includes median
+                            if ( rmsemedian <= rmsemax)
+                                rmsemin = find(bb==min(bb(1:rmsemax)+1e10*(bb(1:rmsemax)<=0)));
+                            else
+                                rmsemin = find(bb==min(bb(rmsemax:length(bb)+1e10*(bb(1:rmsemax)<=0))));
+                            end
+                            flight(lad,n,chl,lai,sza,vza).valkcindex = rmsemedian;                                                        
+                            
+                            %
+%                             aa = flight(lad,n,chl,lai,sza,vza).poly1a0;
+%                             bb = flight(lad,n,chl,lai,sza,vza).poly1rmse;
+%                             % find max rmse for non negative solutions
+%                             rmsemax = find(bb==max(bb(aa>=0)));
+%                             % find median rmse for non negative solutions
+%                             dd = sort(bb(aa>=0));
+%                             rmsemedian = find(bb==dd(max(min(round(length(dd)*0.5),length(dd)),1) ),1,'first');
+%                             % identify range of chl that spans one end to the max and includes median
+%                             if ( rmsemedian <= rmsemax)
+%                                 rmsemin = find(bb==min(bb(1:rmsemax)+1e10*(bb(1:rmsemax)<=0)));
+%                             else
+%                                 rmsemin = find(bb==min(bb(rmsemax:length(bb)+1e10*(bb(1:rmsemax)<=0))));
+%                             end
+%                             flight(lad,n,chl,lai,sza,vza).valk2cindex = rmsemin;
+                        end
+                        
+                    end
+                end
+            end
+        end
+    end
+end
+
+            
+            %% results using sactual w0
+xx = 1:10;
+yy = 10*(0:199) + repmat(xx,1,20);
+sza = 1;
+vza = 1;
+figure(1)
+clf;
+slist = {'^','>','+','o'};
+subplot(2,2,1)
+flight = flightcbs700nm;
+hold on;
+    for n = 2:length(Nlist);
+        for lad = 1:4;
+        aa=[flight(lad,n,:,:,sza,vza).valk];
+        bb=[flight(lad,n,:,:,sza,vza).D];
+        cc=[flight(lad,n,:,:,sza,vza).N];
+        dd=[flight(lad,n,:,:,sza,vza).Cab];       
+        sc(n,lad) = scatter(aa(yy),bb,10*cc,dd,slist{lad});
+        end
+    end
+    plot([0 1],[0 1],'k','LineWidth',2)
+    xlim([0 1])
+colorbar
+legend('1:1 line','Erectophile','Planophile','Uniform','Spherical','Location','Southeast')
+subplot(2,2,2)
+flight = flightcbs700nm;
+hold on;
+    for n = 2:length(Nlist);
+        for lad = 1:4;
+        aa=[flight(lad,n,:,:,sza,vza).poly2a0];
+        bb=[flight(lad,n,:,:,sza,vza).D];
+        cc=[flight(lad,n,:,:,sza,vza).N];
+        dd=[flight(lad,n,:,:,sza,vza).Cab];       
+        sc(n,lad) = scatter(aa(yy),bb,10*cc,dd,slist{lad});
+    end;
+    end
+    plot([0 1],[0 1],'k','LineWidth',2)
+        xlim([0 1])
+colorbar
+legend('1:1 line','Erectophile','Planophile','Uniform','Spherical','Location','Southeast')
+subplot(2,2,3)
+flight = flightcrs700nm;
+hold on;
+    for n = 2:length(Nlist);
+        for lad = 1:4;
+        aa=[flight(lad,n,:,:,sza,vza).valk];
+        bb=[flight(lad,n,:,:,sza,vza).D];
+        cc=[flight(lad,n,:,:,sza,vza).N];
+        dd=[flight(lad,n,:,:,sza,vza).Cab];       
+        sc(n,lad) = scatter(aa(yy),bb,10*cc,dd,slist{lad});
+    end;
+    end
+    plot([0 1],[0 1],'k','LineWidth',2)
+        xlim([0 1])
+colorbar
+legend('1:1 line','Erectophile','Planophile','Uniform','Spherical','Location','Southeast')
+subplot(2,2,4)
+flight = flightcrs700nm;
+hold on;
+    for n = 2:length(Nlist);
+        for lad = 1:4;
+        aa=[flight(lad,n,:,:,sza,vza).poly2a0];
+        bb=[flight(lad,n,:,:,sza,vza).D];
+        cc=[flight(lad,n,:,:,sza,vza).N];
+        dd=[flight(lad,n,:,:,sza,vza).Cab];       
+        sc(n,lad) = scatter(aa(yy),bb,10*cc,dd,slist{lad});
+    end;
+    end
+    plot([0 1],[0 1],'k','LineWidth',2)
+        xlim([0 1])
+colorbar
+legend('1:1 line','Erectophile','Planophile','Uniform','Spherical','Location','Southeast')

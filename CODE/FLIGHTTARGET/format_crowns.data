@@ -1,0 +1,10 @@
+X__DIM, Y_DIM, NOSTANDS
+type    x    y    z   Ex   Ey  LAI LAD LEAF_SIZE  DBH
+
+crown type (cones=0,  ellipsoid=1), 
+crown centre (x,y,z), 
+crown shape parameters (Ex,Ey) or (r,h), 
+LAI - in this case refers to density in m2/m3. Only used if the parameter TOTAL_LAI read in in_flight.data is negative, otherwise uses the 'in_fight.data' parameter as  the total scene leaf area index.
+LAD (user=0,sph=1,pl=2,er=3) [currently not implemented, just uses default] 
+LEAF_SIZE, - radius of leaves
+DBH - 0 means no trunks simulated, otherwise base diameter of trunk
