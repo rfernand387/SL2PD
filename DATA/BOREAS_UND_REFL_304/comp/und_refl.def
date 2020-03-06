@@ -1,0 +1,236 @@
+BOREAS RSS-19 Seasonal Understory Reflectance Data
+
+7.3 Data Characteristics
+
+7.3.1 Parameter/Variable
+
+The parameters contained in the data files on the CD-ROM are:
+
+         Column Name
+------------------------------
+SITE_NAME
+SUB_SITE
+START_DATE
+START_TIME
+END_DATE
+END_TIME
+INSTRUMENT
+SOLAR_AZ_ANG
+SOLAR_ZEN_ANG
+ILLUMINATION_CONDTN
+TARGET_DESCR
+NUM_OBS
+WAVELENGTH
+MEAN_REFL
+STD_ERR_REFL
+COMMENTS
+CRTFCN_CODE
+REVISION_DATE
+
+7.3.2 Variable Description/Definition
+
+The descriptions of the parameters contained in the data files on the CD-ROM 
+are:
+
+         Column Name                             Description
+------------------------------ ------------------------------------------------
+SITE_NAME                      The identifier assigned to the site by BOREAS, in
+                               the format SSS-TTT-CCCCC, where SSS identifies
+                               the portion of the study area: NSA, SSA, REG, 
+                               TRN, and TTT identifies the cover type for the 
+                               site, 999 if unknown, and CCCCC is the identifier
+                               for site, exactly what it means will vary with 
+                               site type.
+
+SUB_SITE                       The identifier assigned to the sub-site by 
+                               BOREAS, in the format GGGGG-IIIII, where GGGGG is 
+                               the group associated with the sub-site 
+                               instrument, e.g. HYD06 or STAFF, and IIIII is the 
+                               identifier, for sub-site, often this will refer 
+                               to an instrument.
+
+START_DATE                     The date on which the collection of data 
+                               commenced.
+
+START_TIME                     The starting Greenwich Mean Time (GMT) for the
+                               data collected.
+
+END_DATE                       The date on which the collection of the data was
+                               terminated.
+
+END_TIME                       The ending Greenwich Mean Time (GMT) for the 
+                               data collected.
+
+INSTRUMENT                     The name of the device used to make the
+                               measurements.
+
+SOLAR_AZ_ANG                   Direction referred to as a circular scale of 
+                               degrees read clockwise describing the position of 
+                               the sun where 0=north, 90=east, 180=south and 
+                               270=west.
+
+SOLAR_ZEN_ANG                  The angle from the surface normal (straight up)
+                               to the sun during the data collection.
+
+ILLUMINATION_CONDTN            The lighting condition when the data was 
+                               collected-- e.g. sunny, shade, or combined.
+
+TARGET_DESCR                   A description of the material that is being 
+                               measured.
+
+NUM_OBS                        Number of observations of the given sample used
+                               to calculate given measurements.
+
+WAVELENGTH                     Spectral wavelength at which measurement was 
+                               acquired.
+
+MEAN_REFL                      The average reflectance factor.
+
+STD_ERR_REFL                   The standard error of the mean reflectance 
+                               factors.
+
+COMMENTS                       Descriptive information to clarify or enhance
+                               the understanding of the other entered data.
+
+CRTFCN_CODE                    The BOREAS certification level of the data.  
+                               Examples are CPI (Checked by PI), CGR (Certified 
+                               by Group), PRE (Preliminary), and CPI-??? (CPI 
+                               but questionable).
+
+REVISION_DATE                  The most recent date when the information in the
+                               referenced data base table record was revised.
+
+7.3.3 Unit of Measurement
+
+The measurement units for the parameters contained in the data files on the CD-
+ROM are:
+
+         Column Name                                Units
+------------------------------ ------------------------------------------------
+SITE_NAME                      [none]
+SUB_SITE                       [none]
+START_DATE                     [DD-MON-YYYY]
+START_TIME                     [HHMM GMT]
+END_DATE                       [DD-MON-YYYY]
+END_TIME                       [HHMM GMT]
+INSTRUMENT                     [none]
+SOLAR_AZ_ANG                   [degrees]
+SOLAR_ZEN_ANG                  [degrees]
+ILLUMINATION_CONDTN            [none]
+TARGET_DESCR                   [none]
+NUM_OBS                        [counts]
+WAVELENGTH                     [micrometers]
+MEAN_REFL                      [percent]
+STD_ERR_REFL                   [percent]
+CRTFCN_CODE                    [none]
+COMMENTS                       [none]
+REVISION_DATE                  [DD-MON-YYYY]
+
+7.3.4 Data Source
+
+The source of the parameter values contained in the data files on the CD-ROM 
+are:
+
+         Column Name                             Data Source
+------------------------------ ------------------------------------------------
+SITE_NAME                      [Assigned by BORIS]
+SUB_SITE                       [Assigned by BORIS]
+START_DATE                     [Human observer]
+START_TIME                     [Human observer]
+END_DATE                       [Human observer]
+END_TIME                       [Human observer]
+INSTRUMENT                     [Human observer]
+SOLAR_AZ_ANG                   [Standard ephemeris equations]
+SOLAR_ZEN_ANG                  [Standard ephemeris equations]
+ILLUMINATION_CONDTN            [Human observer]
+TARGET_DESCR                   [Human observer]
+NUM_OBS                        [ASD or SE-590 spectroradiometer]
+WAVELENGTH                     [ASD or SE-590 spectroradiometer]
+MEAN_REFL                      [ASD or SE-590 spectroradiometer]
+STD_ERR_REFL                   [ASD or SE-590 spectroradiometer]
+COMMENTS                       [Assigned by BORIS]
+CRTFCN_CODE                    [Assigned by BORIS]
+REVISION_DATE                  [Assigned by BORIS]
+
+7.3.5  Data Range
+
+The following table gives information about the parameter values found in the 
+data files on the CD-ROM.
+
+                     Minimum        Maximum        Missng  Unrel  Below   Data
+                     Data           Data           Data    Data   Detect  Not
+Column Name          Value          Value          Value   Value  Limit   Cllctd
+--------------------------------------------------------------------------------
+SITE_NAME            NSA-FEN-FLXTR  SSA-YJP-FLXTR  None    None   None    None
+
+SUB_SITE             RSS19-URF01    RSS19-URF01    None    None   None    None
+
+START_DATE           06-FEB-1994    13-SEP-1994    None    None   None    None
+
+START_TIME           1542           2156           None    None   None    None
+
+END_DATE             06-FEB-1994    16-SEP-1994    None    None   None    None
+
+END_TIME             1632           2212           None    None   None    None
+
+INSTRUMENT           N/A            N/A            None    None   None    None
+
+SOLAR_AZ_ANG         137.769        233.02         None    None   None    None
+
+SOLAR_ZEN_ANG        33.354         80.482         None    None   None    None
+
+ILLUMINATION_CONDTN  N/A            N/A            None    None   None    None
+
+TARGET_DESCR         N/A            N/A            None    None   None    None
+
+NUM_OBS              2              47             None    None   None    None
+
+WAVELENGTH           .4             .901           None    None   None    None
+
+MEAN_REFL            .8             98.2           None    None   None    None
+
+STD_ERR_REFL         0              11.6           None    None   None    None
+
+COMMENTS             N/A            N/A            None    None   None    Blank
+
+CRTFCN_CODE          CPI            CPI            None    None   None    None
+
+REVISION_DATE        04-SEP-1997    26-SEP-1997    None    None   None    None
+
+--------------------------------------------------------------------------------
+Minimum Data Value -- The minimum value found in the column.
+Maximum Data Value -- The maximum value found in the column.
+Missng Data Value  -- The value that indicates missing data. This is used to
+                      indicate that an attempt was made to determine the
+                      parameter value, but the attempt was unsuccessful.
+Unrel Data Value   -- The value that indicates unreliable data.  This is used
+                      to indicate an attempt was made to determine the
+                      parameter value, but the value was deemed to be
+                      unreliable by the analysis personnel.
+Below Detect Limit -- The value that indicates parameter values below the
+                      instruments detection limits.  This is used to
+                      indicate that an attempt was made to determine the
+                      parameter value, but the analysis personnel determined
+                      that the parameter value was below the detection
+                      limit of the instrumentation.
+Data Not Cllctd    -- This value indicates that no attempt was made to
+                      determine the parameter value.  This usually
+                      indicates that BORIS combined several similar but
+                      not identical data sets into the same data base table
+                      but this particular science team did not
+                      measure that parameter.
+
+Blank -- Indicates that blank spaces are used to denote that type of value.
+N/A   -- Indicates that the value is not applicable to the respective column.
+None  -- Indicates that no values of that sort were found in the column.
+--------------------------------------------------------------------------------
+
+7.4  Sample Data Record
+
+SITE_NAME,SUB_SITE,START_DATE,START_TIME,END_DATE,END_TIME,INSTRUMENT,
+SOLAR_AZ_ANG,SOLAR_ZEN_ANG,ILLUMINATION_CONDTN,TARGET_DESCR,NUM_OBS,WAVELENGTH,
+MEAN_REFL,STD_ERR_REFL,COMMENTS,CRTFCN_CODE,REVISION_DATE
+'NSA-FEN-FLXTR','RSS19-URF01',12-FEB-1994,1854,12-FEB-1994,1858,'SE590',182.229,
+69.503,'SUNNY','SUNLIT SNOW+DEBRIS',3,.9,24.5,3.4,'','CPI',04-SEP-1997
+'NSA-FEN-FLXTR','RSS19-URF01',12-FEB-1994,1854,12-FEB-1994,1858,'SE590',182.229,
+69.503,'SUNNY','SUNLIT SNOW+DEBRIS',3,.858,32.0,4.0,'','CPI',04-SEP-1997

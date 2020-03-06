@@ -1,0 +1,43 @@
+BOREAS - The Boreal Ecosystem-Atmosphere Study is an intensive remote-sensing 
+and field study of a Canadian boreal forest. BOREAS investigates exchanges of 
+energy, water, heat, CO2, and trace gases between the boreal forest and the 
+atmosphere. Field campaigns were conducted using surface, airborne, and 
+satellite observations to characterize biological and physical processes that 
+govern the exchanges. A network of towers was used to measure surface-atmosphere 
+fluxes using eddy correlation equipment. Data are availablethrough the ORNL 
+DAAC's BIOME online search-and-order system, and through the BOREAS page 
+maintained by the ORNL DAAC. 
+
+Additional information on the BOREAS project is available by accessing the 
+BOREAS home page maintained by the NASA Goddard Space Flight Center. 
+
+The overall characteristics and availability of this data collection are 
+summarized below. 
+
+    Spatial: 1000 x 1000 km study area, 2 intensive field sites; 
+		north-central Canada 
+    Temporal: Sept. 1993 - Oct. 1996; periodic intensive field campaigns 
+    Data Themes: surface-atmosphere fluxes, ecology, trace gases, hydrology, 
+		and remote-sensing 
+    Project Status: completed 
+
+BOREAS data holdings are structured "BOREAS Science Group"/dataset.
+BOREAS science teams are combined into the following BOREAS Science Groups 
+	Airborne Fluxes and Meteorology (AFM)
+	Hydrology (HYD)
+	Remote Sensing Science (RSS)
+	Staff Science (STAFF)
+	Terrestrial Ecology (TE)
+	Tower Fluxes (TF)
+	Trace Gas Biogeochemistry (TGB)
+Contained within each dataset directory is /comp [for companion files] and /data
+[for real data].  Image datasets may have a /viewer subdirectory with
+JPG files for browsing.
+
+KEYWORDS:
+boreal, forest, Canada, atmosphere, carbon dioxide, climate, change, satellite, 
+water, temperature, precipitation, biome, radiative, energy, heat, trace gases, 
+global, change, warming, continental, interior, cycle, soil, edaphic, moisture, 
+climatology, evapotranspiration, humidity, cloud, cloudiness, ecosystem, 
+biogeochemistry, atmosphere, aircraft, remote sensing, radiation, field 
+experiment, EOSDIS 

@@ -1,0 +1,821 @@
+BOREAS RSS-19 1994 Seasonal Understory Reflectance Data
+
+Summary 
+
+One objective of BOREAS is to further the understanding of the spectral 
+bidirectional reflectance of typical boreal ecosystem stands in the 
+visible/near-infrared regime.  An essential input for any canopy BRDF model is 
+an accurate estimate of the average understory reflectance, both for sunlit and 
+shaded conditions.  These variables can be expected to vary seasonally because 
+of species-dependent differences in the phenological cycle of foliar display.  
+In response to these requirements, the average understory reflectance for the 
+flux tower sites of both the NSA (Thompson, Manitoba) and the SSA (Candle Lake, 
+Saskatchewan) Study Areas (NSA and SSA) was observed throughout the year during 
+five field campaigns.  This was done by measuring the nadir reflectance (400 to 
+850 nm) of sunlit and shaded understory (vegetation and snow cover) along a 
+surveyed LAI transect line (Chen, RSS-07) at each site near solar noon and 
+documenting a average site reflectance.  Comparisons between sites reveal 
+differences in the green and infrared regions of the spectra, because of the 
+differing species in the understory for each site.  Temporal (seasonal) 
+variation for each site was also observed, indicating the changing flora 
+mixtures and changing spectral signatures as the understory matures during the 
+growing season.
+
+Table of Contents
+
+1.  Data Set Overview
+2.  Investigator(s)
+3.  Theory of Measurements
+4.  Equipment
+5.  Data Acquisition Methods
+6.  Observations
+7.  Data Description
+8.  Data Organization
+9.  Data Manipulations
+10. Errors
+11. Notes
+12. Application of the Data Set
+13. Future Modifications and Plans
+14. Software
+15. Data Access
+16. Output Products and Availability
+17. References
+18. Glossary of Terms
+19. List of Acronyms
+20. Document Information
+
+1.  DATA SET OVERVIEW
+
+1.1  Data Set Identification
+
+BOREAS RSS-19 1994 Seasonal Understory Reflectance Data
+
+1.2  Data Set Introduction
+
+Mean sunlit nadir understory reflectance spectra (400 to 850 nm) and their 
+standard errors for the following canopy types are presented: Fen, Old Black 
+Spruce (OBS), Old Jack Pine (OJP), and Young Jack Pine (YJP). Data for the tower 
+flux sites are provided for both Northern Study Area (NSA) and Southern Study 
+Area (SSA) locations for all five BOReal Ecosystem-Atmosphere Study (BOREAS) 
+field campaigns.  These five field campaigns are referred to as Focused Field 
+Campaign-Winter (FFC-W) (Feb. 1994), FFC-Thaw (T) (Apr. 1994), Intensive Field 
+Campaign (IFC)-1 (May/June 1994), IFC-2 (July 1994), and IFC-3 (Sept. 1994).
+
+1.3  Objective/Purpose
+
+The objective was to characterize seasonal change in the understory spectral 
+reflectance at eight BOREAS tower flux sites, from February to September, for 
+all five BOREAS field campaigns. 
+
+1.4  Summary of Parameters
+
+Each data file contains about 20 records of header information, such as:
+
+Field Instrument, Reference Calibration Panel, 
+Spectral Range, Wavelength Step, Spectrum Description, Field Of View (FOV), 
+Field Campaign, Location, Latitude, Longitude, Date, Time, Solar Zenith Angle 
+(SZA), Solar Azimuth, Illumination, Target Description, and Comments.
+
+After the header information, there are reflectance and standard error 
+measurements for each cover type in the file (one to three) given at each 
+wavelength step within the spectral range.  This list is often about 150 records 
+for the Spectron Engineering spectroradiometer (SE)-590, and 378 records for the 
+Analytic Spectral Devices, Inc. (ASD) instrument.
+
+1.5  Discussion
+
+Mean sunlit nadir understory reflectance was determined by taking measurements 
+at various points along a surveyed Leaf Area Index (LAI) transect [Chen, 1994], 
+each observation target being chosen as representative of the local area, 
+converting to reflectance, and producing a mean from all the derived 
+reflectances along the transect line [White et al., 1995].  This provided mean 
+understory reflectance, weighted by the component vegetation in the understory 
+throughout the canopy site.
+
+BOREAS sites have shown a definite and observable variation in the sunlit mean 
+understory reflectance coefficients in the visible/near-infrared regions as a 
+function of forest species stand. This can be related to change in vegetation in 
+the understory, as well as the difference in growing conditions at each site. 
+Phenological changes are also clearly observable, especially in the case of OBS, 
+indicating the influence of changes in coverage of species type and growth on 
+the nadir reflectance spectrum.
+
+1.6  Related Data Sets
+
+BOREAS RSS-01 PARABOLA SSA Surface Reflectance and Transmittance Data
+BOREAS RSS-03 Reflectance Measured from a Helicopter-Mounted Barnes MMR
+BOREAS RSS-03 Reflectance Measured from a Helicopter-Mounted SE-590
+
+2.  INVESTIGATORS
+
+2.1  Investigators Name and Title
+
+John R. Miller (RSS-19), Professor, York University
+H. Peter White (RSS-19), York University
+Jim Freemantle (RSS-19), Institute for Space and Terrestrial Science (ISTS)
+Greg McDermid (RSS-19), University of Waterloo, ISTS
+Derek R. Peddle(RSS-19), University of Waterloo, ISTS
+Irene Rubinstein (RSS-19), ISTS
+Paul Shepherd (RSS-19), ISTS
+Raymond Soffer (RSS-19), York University
+Jing Chen (RSS-07), Canada Centre for Remote Sensing (CCRS)
+Richard Fournier (RSS-19 and TE-09), Universite Laval
+
+2.2  Title of Investigation
+
+Seasonal Change in Mean Understory Reflectance for Conifer Flux Tower Sites at 
+BOREAS
+
+2.3  Contact Information
+
+Contact 1
+------------------------------------
+John R. Miller (RSS-19)
+Dept. Physics & Astronomy
+York University
+North York, Ontario, Canada
+(416) 736-2100
+(416) 736-5626 (fax)
+miller@eol.ists.ca
+http://eol.ists.ca
+
+Contact 2
+------------------------------------
+H. Peter White
+Dept. Physics & Astronomy
+York University
+North York, Ontario, Canada
+(416) 736-2100
+(416) 736-5626 (fax)
+white@eol.ists.ca
+http://eol.ists.ca
+
+Contact 3
+-------------
+Jaime Nickeson
+BORIS Team Representative
+NASA Goddard Space Flight Center
+Greenbelt, Maryland 
+Telephone: 301-286-3373
+Fax:  301-286-0239
+Email:  jaime@ltpmail.gsfc.nasa.gov
+
+3.  Theory of Measurements
+
+An estimate of the average spectral reflectance of the understory for each IFC 
+was made in order to specify the boundary condition in canopy reflectance 
+modeling for Remote Sensing Science (RSS) investigators.  The experimental 
+design was focused on (i) determination of an appropriate method of spatial 
+averaging, (ii) characterization of the spectral reflectance of the understory 
+under direct Sun (Sun fleck) and shadow illumination conditions, and (iii) 
+observations within 2 hours of local solar noon to generate measurements of the 
+understory reflectance factor that is representative of remote sensing 
+observations.
+
+Observations of 5 to 40 individual spectra at each flux tower site, converted to 
+reflectance by comparison to calibrated reference target, produced a mean 
+reflectance along the transect line [White et al., 1995], considered to be 
+representative of the understory at the date of the measurement.
+
+4.  Equipment
+
+4.1  Sensor/Instrument Description
+
+Observations were made with the SE-590 field-portable data-logging 
+spectroradiometer except during IFC-1 and some sites during IFC-3, where 
+additional observations were obtained with the ASD instrument. The two 
+instruments used during these campaigns were detector array field spectrometers 
+with spectral ranges nominally 350-1100 nm but with data reported in the 400 to 
+900 nm range.  The calibration panels used in the field were the white and gray 
+side of a Kodak Gray Card (KGW-W and KGC-G respectively), which were spectrally 
+and angularly calibrated at ISTS (Soffer et al. 1995).
+
+4.1.1  Collection Environment
+
+The understory conditions at the time of observations as indicated in Section 
+7.2.2, Table 1, are:  Sun - target illuminated by unobscured direct Sun (in a 
+Sun fleck), Shade - target outside of a Sun fleck area illuminated only by 
+diffuse, undercanopy radiation, (s) - snow was observed, (v) - vegetation 
+observed.
+Observations were made under clear sky conditions or with minimal cloud cover, 
+and in this case without clouds within 60 degrees of the Sun.  Observations were 
+made within 2 hours of local solar noon.  The ambient air temperature range 
+during observations varied from -35 °C during FFC-W to more than +25 °C in IFC-
+2.
+
+4.1.2  Source/Platform
+
+SE-590.
+ASD field spectroradiometer.
+Both instruments were hand-held by the observer during measurements.
+
+4.1.3  Source/Platform Mission Objectives
+
+An estimate of the average spectral reflectance of the understory for each IFC 
+was made in order to specify the boundary condition in canopy reflectance 
+modeling for RSS investigators.
+
+4.1.4  Key Variables
+
+Spectral reflectance.
+
+4.1.5  Principles of Operation
+
+A nadir-viewing field spectrometer was used to measure the sunlit and shaded 
+(where possible) understory reflectance at marked 10-m-interval transect lines, 
+At each marker location an understory observation target was chosen as 
+representative of the local area.  The observations were made in the nadir 
+position, with care to minimize spectral contamination from observers and 
+equipment.  The light source for all observations was natural illumination 
+generated by solar direct/diffuse radiation that reaches the forest stand floor.  
+
+4.1.6  Sensor/Instrument Measurement Geometry
+
+The sensor was kept in a nadir viewing position for all measurements.  The 
+height of the instrument was approximately 1 m, translating to an FOV with about 
+a 5-6 m radius.
+
+4.1.7  Manufacturer of Sensor/Instrument
+
+The SE-590 was manufactured by:
+
+Spectron Engineering, Inc.
+225 Yuma Court
+Denver, CO  80223
+USA  
+
+The ASD field spectroradiometer was manufactured by:
+
+Analytic Spectral Devices, Inc.
+4760 Walnut Street
+Suite 105
+Boulder, CO  80301
+USA.  
+Kodak, of Rochester, NY, manufactures the reference reflectance card.
+
+4.2  Calibration
+
+All calibrations of the instruments and the reflecting panels were performed at 
+ISTS using standard laboratory methods.  Special care was taken to establish the 
+calibration and estimates of reliability for the Kodak reference cards (KGCs) 
+which were selected for use in the field because of their portability in a 
+relatively difficult field environment and their reported (Milton, 1989).  
+Laboratory bidirectional reflectance measurements were made between 15 and 80 
+degrees at 5-degree intervals for all six KGCs used in the BOREAS field 
+campaigns.  Absolute variability in the reflectance was less than 2% for the 
+white cards and less than 1% for the gray cards, for the entire range of view 
+angles.  Data were gathered with a fiber Ocean Optics array-spectrometer mounted 
+on a goniometer and comparisons were made to a Spectralon calibration panel 
+(Labsphere) to obtain absolute panel bidirectional reflectance distribution 
+functions (BRDFs).  For validation of ISTS calibration methodology, York 
+University's white Spectralon panel (Labsphere SN 3484 99%) and gray Spectralon 
+panel (Labsphere SN 9485A 50%) were shipped to Dr. Elizabeth Walter-Shea (TE-12) 
+for BOREAS panel field intercalibrations at the University of Nebraska. 
+Comparisons between the Spectralon panel BRDF calibrations for view angles 
+between 15 and 75 degrees were found to be within 2% for the white panel and 
+within 1% for the gray panel.  The calibration procedures and results are 
+described in more detail in Soffer et al. [1995]. 
+
+4.2.1  Specifications
+      
+None given.
+
+4.2.1.1  Tolerance
+
+None given.
+
+4.2.2  Frequency of Calibration
+
+BRDF calibrations of the York University Spectralon panels was carried out prior 
+to IFC-1 (1994), and comparative measurements were made between this Spectralon 
+(white) and KGCs in the field at BOREAS on at least one occasion during each 
+campaign.  The detailed BRDF characterization of six KGCs was carried out at 
+ISTS after IFC-3. However, the consistency (<2% for white, <1% for gray) of 
+results between KGCs used at BOREAS and fresh, unused cards indicates 
+insignificant panel deterioration during the campaigns.
+ 
+4.2.3  Other Calibration Information
+
+None given.
+
+5.  Data Acquisition Methods
+
+A nadir-viewing field spectrometer was used to measure the sunlit and shaded 
+(where possible) understory reflectance at marked 10-m intervals along the 
+surveyed LAI transect line [Chen, 1994], which normally ran in a southeastern 
+direction from each site tower.  At each marker location, an understory 
+observation target was chosen as representative of the local area. The 
+observations were made in the nadir position, with care to minimize spectral 
+contamination from observers and equipment.
+
+The FOV used allowed for an approximately 5-cm-radius area of understory to be 
+observed, which was followed with a calibration panel observation taken within 1 
+minute of the target measurement. The calibration panel used, was dependent on 
+the conditions and availability during each campaign.
+
+The above methodology was followed closely for all but one field campaign, IFC-
+2.  During IFC-2, field observations were obtained for species-specific 
+reflectances accompanied by aerial coverage estimates of the species, thereby 
+allowing weighted-average understory reflectance spectra to be determined.
+
+Each location was observed with the objective of viewing the average understory 
+composition.  When more than one type of understory species mixing occurred at a 
+marker, observations of each flora distribution were performed.  Thus, when 
+averaged together, a mean understory reflectance weighted to each type of 
+understory component population was possible.  In some cases, sites were divided 
+specifically into small grids, with each grid being observed to provide a 
+detailed understory BRDF for unique locations within the flux tower site, and 
+where possible, observation runs were performed to correspond to Compact 
+Airborne Spectrographic Imager (CASI) multiangle, multialtitude observations 
+also being performed.
+
+6.  Observations
+
+6.1  Data Notes
+
+None given.
+
+6.2  Field Notes
+
+At some sites it was not possible to place the calibration panel level in the 
+exact location of the target being observed.  Every effort was made to keep the 
+panel level to the horizon and as close as possible to the target location.  It 
+was sometimes necessary to raise the calibration panel above the understory to 
+avoid contamination or destruction, which caused the incident irradiance field 
+to be slightly different between panel and target observations, because of 
+scattering, etc., in the overstory.  Such location discrepancies were kept at a 
+minimum, and are not believed to have influenced the results significantly.
+
+7.  Data Description
+
+A summary of the complete understory data set is provided below in tabular form. 
+This summarizes what data are available by specifying, for each data set, the 
+field campaign, the study area, the flux tower site, the instrument used for the 
+measurements, the type of Kodak reference cards used for in-field reflectance 
+determination, the observation date, and comments regarding the illumination 
+conditions or the understory targets.  More detailed information is provided in 
+the spectral data headers.
+
+7.1  Spatial Characteristics
+
+Nadir-viewing spectrometer readings were made of the understory at marked 10-m 
+intervals along the surveyed LAI transect line [White et al., 1995].  Also, see
+Chen et al, 1997, for graphics and details about the layout of LAI transects.
+
+7.1.1  Spatial Coverage
+
+Flux Tower Sites
+-------------------------------------------------------------------------- 
+Site       Grid Id   Longitude    Latitude      UTM         UTM      UTM 
+                                              Easting     Northing   Zone
+-------------------------------------------------------------------------- 
+ Southern Study Area:
+SSA-FEN     F0L9T   104.61798W   53.80206N    525159.8    5961566.6  13
+SSA-OBS     G8I4T   105.11779W   53.98717N    492276.5    5982100.5  13
+SSA-OJP     G2L3T   104.69203W   53.91634N    520227.7    5974257.5  13
+SSA-YJP     F8L6T   104.64529W   53.87581N    523320.2    5969762.5  13
+-------------------------------------------------------------------------- 
+ Northern Study Area:
+NSA-OBS     T3R8T    98.48139W   55.88007N    532444.5    6192853.4  14
+NSA-OJP     T7Q8T    98.62396W   55.92842N    523496.2    6198176.3  14
+NSA-YJP     T8S9T    98.28706W   55.89575N    544583.9    6194706.9  14
+NSA-FEN     T7S1T    98.42072W   55.91481N    536207.9    6196749.6  14
+-------------------------------------------------------------------------- 
+
+Each flux tower site allowed for 5 to 40 individual spectral observations.
+
+7.1.2  Spatial Coverage Map
+
+Not available.
+
+7.1.3  Spatial Resolution
+
+Observations were recorded along a transect line at marked 10 m intervals.
+
+7.1.4  Projection
+
+Not applicable.
+
+7.1.5  Grid Description
+
+Not applicable.
+
+7.2  Temporal Characteristics
+
+7.2.1  Temporal Coverage
+
+Observations were made during all five BOREAS field campaigns: FFC-W, FFC-T, 
+IFC-1, IFC-2, and IFC-3. Measurements were obtained  within 2 hours of local 
+solar noon.
+
+7.2.2  Temporal Coverage Map
+
+  Field   Study       Instr.  Panel  Observation  
+Campaign  Area  Site  Used    Used      Date     Comments
+--------- ----- ---- ------  ------ -----------  --------------
+FFC-W     NSA   Fen  SE590   KGC-W   12-Feb-94   Sun/Debris
+                OJP  SE590   KGC-W   12-Feb-94   Sun/Shade
+                YJP  SE590   KGC-W   12-Feb-94   Sun/Shade
+          SSA   Fen  SE590   KGC-W   09-Feb-94   Sun
+                OBS  SE590   KGC-W   08-Feb-94   Sun/Shade
+                OJP  SE590   KGC-W   06-Feb-94   Sun/shade
+                YJP  SE590   KGC-W   09-Feb-94   Sun/Shade
+FFC-T     NSA   Fen   ASD    KGC-W   21-Apr-94   Sun(s,v)
+                OJP   ASD    KGC-W   21-Apr-94   Sun/Shade(s)
+          SSA   OBS   ASD    KGC-W   16-Apr-94   Sun/Shade(s,v)
+                OJP   ASD    KGC-W   17-Apr-94   Sun/Shade(v)
+                YJP   ASD    KGC-W   27-Apr-94   Sun/Shade(s,v)
+IFC-1     NSA   OJP  SE590   KGC-W 11(13)-Jun-94 Sun/Shade
+          SSA   OBS  SE590   KGC-W   31-May-94   Sun/Shade
+                OJP  SE590   KGC-W   26-May-94   Sun/shade
+                YJP  SE590   KGC-W   26-May-94   Sun/Shade
+IFC-2     NSA   OBS  SE590   KGC-W   16-Jul-94   Sun/Shade
+          SSA   OBS  SE590   KGC-W   23-Jul-94   Sun/Shade
+                OJP  SE590   KGC-W   21-Jul-94   Sun/Shade
+                YJP  SE590   KGC-W   20-Jul-94   Sun/Shade
+IFC-3     NSA   Fen  SE590   KGC-G   03-Sep-94   Sun
+                OBS  SE590   KGC-G   02-Sep-94   Sun/Shade
+                OJP  SE590   KGC-G 06(07)-Sep-94 Sun/Shade
+                YJP  SE590   KGC-G   01-Sep-94   Sun/Shade
+          SSA   Fen  SE590   KGC-G   12-Sep-94   Sun/Shade
+                OBS  SE590   KGC-G   13-Sep-94   Sun/Shade
+                OJP  SE590   KGC-G   12-Sep-94   Sun/Shade
+                YJP  SE590   KGC-G  12(13)(16)-  Sun/Shade
+                                     Sep-94
+
+7.2.3  Temporal Resolution
+ 
+Observations were made only once at each tower site during each field campaign. 
+For any such flux tower site, measurements were made at 10 to 40 individual 
+understory locations along the 100- to 300-m LAI line within a 30- to 60-minute 
+period near solar noon, in order to minimize changes in the SZA. From these data 
+a mean mid-day understory reflectance was calculated.
+
+7.3 Data Characteristics
+
+Data characteristics are defined in the companion data definition file 
+(und_refl.def).
+
+7.4  Sample Data Record
+
+Sample data format shown in the companion data definition file (und_refl.def).
+
+8. DATA ORGANIZATION
+
+8.1  Data Granularity
+
+All of the 1994 Seasonal Understory Reflectance Data are contained in one 
+dataset.
+
+8.2  Data Format
+
+The data files contain numerical and character fields of varying length 
+separated by commas. The character fields are enclosed with  a single apostrophe 
+marks. There are no spaces between the fields.  Sample data records are shown in 
+the companion data definition files (und_refl.def).
+
+9.  Data Manipulations
+
+9.1  Formulae
+
+As described more fully in Peddle et al. (1995), for any particular SZA, the 
+target reflectance is calculated from:
+
+target_ref. = (target_signal/reference_panel_signal)*panel_reflectance_at_SZA.
+
+The panel reflectance at SZA is calculated by interpolation between laboratory 
+panel BRDF calibrations (Soever et al., 1995).  The SZA is calculated from the 
+local time and site longitude and latitude using standard ephemeris equations 
+(see Peddle et al., 1995).
+
+9.1.1 Derivation Techniques and Algorithms
+
+It was possible to determine the SZA of each observation to a high degree of 
+accuracy (within a few minutes of arc) using the tower flux site's latitude and 
+longitude outlined in the BOREAS Experiment Plan Ver. 3.0, and the Local 
+Standard Time (LST) of each observation [Observers Handbook, 1994]. A fourth- 
+order polynomial was fitted to the calibration panel BRDF data provided in 
+Soffer et al. [1995] for each SZA and spectrally interpolated [Peddle et al., 
+1995]. This permitted the understory radiance spectra to be converted to nadir-
+view reflectance. 
+
+In the data reduction, no adjustments were made for the difference in SZA 
+between the panel and target measurements, since they were usually taken within 
+1 minute of each other.
+
+9.2 Data Processing Sequence
+
+9.2.1 Processing Steps
+
+The processing steps to convert raw field spectrometer output spectrum to a 
+reflectance spectrum are described above and in detail in Peddle et al. (1995). 
+Subsequently, the observations under direct Sun illumination, for one flux tower 
+site, during one field campaign, were simply averaged (no weighting) to provide 
+the mean understory reflectance.  The standard error was also computed as the 
+standard error of the mean (SE), which is related to the standard deviation (SD) 
+by: SE = SD/vN. 
+
+9.2.2 Processing Changes
+
+All reported data were collected and processed in the same way, except for IFC-
+1.  In this case, data collection followed a modified strategy in which at each 
+site reflectance spectra were determined for different understory vegetation 
+types (e.g., for lichen, for moss, for labrador tea, etc.), and the aerial 
+coverage of each vegetation type was estimated by site spatial sampling.  In 
+this case, the mean understory spectrum was calculated by weighting the 
+reflectance of each understory type by the corresponding aerial coverage.
+
+9.3 Calculations
+
+9.3.1  Special Corrections/Adjustments
+
+None.
+
+9.3.2  Calculated Variables
+
+Standard error.
+
+9.4  Graphs and Plots
+
+Summary graphs of understory reflectances are available from a paper submitted 
+to the JGR special issue Miller et al., 1997).
+
+10.  ERRORS
+
+10.1  Sources of Error
+
+Although the data were collected between 350-1100 nm, noise due to low signal 
+levels and low detector efficiency in the regions below 400 nm and above 850 nm 
+were observed from both spectrometers and are not presented here.
+
+10.2  Quality Assessment
+
+Error estimate curves for the understory reflectance are provided by showing the 
+mean reflectance curve +/- one standard error.
+
+10.2.1 Data Validation by Source
+
+Data validation efforts included comparisons with reflectance measurements made 
+by Laval University scientists (unpublished) and comparisons of mean reflectance 
+spectra for one tower site for successive field campaigns, both of which 
+demonstrate consistent results. 
+
+10.2.2 Confidence Level/Accuracy Judgment
+
+The seasonal variation in the tower site understory reflectances, the between-
+site variations as reported in the JGR paper (Miller et al., 1997), and the 
+reported standard errors for the spectra reported all suggest data of high 
+quality.
+
+10.2.3 Measurement Error for Parameters
+
+Standard error spectra are provided along with the reflectance spectra.
+
+10.2.4 Additional Quality Assessments
+
+Visual review of plots and the standard error curves were used to assess data 
+quality and to correct occasional recording errors.
+
+10.2.5  Data Verification by Data Center
+
+BOREAS Information System (BORIS) staff have looked at the data and plotted the 
+spectra for all files.
+
+11.  Notes
+
+11.1  Limitations of the Data
+
+There were some data gaps due to various weather and scheduling difficulties in 
+the field. 
+
+Calibrations of the panels used in the near-infrared region have not yet been 
+completed.
+
+11.2  Known Problems with the Data
+
+None. 
+
+11.3  Usage Guidance
+
+Although understory reflectance characterization on a species basis may be of 
+interest to some BOREAS scientists, it was not pursued in this study because it 
+would have required a substantially different measurement strategy.  
+Furthermore, a characterization of the complete BRDF of the understory was 
+considered outside the scope of this study.
+
+11.4  Other Relevant Information
+
+None given.
+
+12.  Application of the Data Set
+
+The application of this data set is to estimate the average spectral reflectance 
+of the understory in order to specify the boundary condition in canopy 
+reflectance modeling for each season. 
+
+13.  FUTURE MODIFICATIONS AND PLANS
+
+None.
+
+14.  Software
+
+14.1  Software Description
+
+In-house macros were written for Microsoft Excel that ingested spectrometer 
+spectral scans for the target and the reference panel, applied corrections for 
+the panel BRDF according to the local SZA, calculated the sample nadir 
+reflectance and then the site-average reflectance spectrum and standard error. 
+See Peddle et al. (1995) for a software and processing description.
+
+14.2  Software Access
+
+Because raw data files were not submitted, it is not useful to provide access to 
+the processing software.  These data were collected specifically to generate 
+site-average understory spectra. 
+
+15. Data Access
+
+15.1 Contact Information
+
+Ms. Beth Nelson
+BOREAS Data Manager
+NASA GSFC
+Greenbelt, MD 
+(301) 286-4005
+(301) 286-0239 (fax)
+beth@ltpmail.gsfc.nasa.gov
+Elizabeth.Nelson@gsfc.nasa.gov
+
+15.2 Data Center Identification
+
+See Section 15.1.
+
+15.3 Procedures for Obtaining Data
+
+Users may place requests by telephone, electronic mail, or fax.
+
+15.4 Data Center Status/Plans
+
+As the BOREAS data are processed and sufficiently quality checked, they will be 
+available from the Earth Observing System Data and Information System (EOSDIS), 
+Oak Ridge National Laboratory (ORNL) Distributed Active Archive Center (DAAC). 
+The BOREAS contact at ORNL is: 
+
+ORNL DAAC User Services
+Oak Ridge National Laboratory
+Oak Ridge, TN 
+(423) 241-3952
+ornldaac@ornl.gov
+ornl@eos.nasa.gov
+
+16. Output Products and Availability
+
+16.1 Tape Products
+
+None.
+
+16.2 Film Products
+
+None.
+
+16.3 Other Products
+
+The data are available as tabular ASCII files.
+
+17.  References
+
+17.1  Platform/Sensor/Instrument/Data Processing Documentation
+
+ASD Personal Spectrometer II Reference Manual. 1993. Analytic Spectral Devices 
+Inc., Boulder, Colorado, USA.
+
+SE-590 Field-Portable Data-logging Spectroradiometer Operating Manual. Spectron 
+Engineering, Inc., 225 Yuma Court, Denver, Co., 80223, USA.
+
+17.2  Journal Articles and Study Reports
+
+Chen, J. and J. Cihlar. 1994.  Canadian Centre for Remote Sensing, Private 
+Communication.
+
+Chen, J.M., P.M. Rich, S.T. Gower, J.M. Norman, and S.Plummer. 1997.  Leaf Area 
+Index of Boreal Forests:  Theory, techniques, and measurements.  Journal of 
+Geophysical Research, BOREAS Special Issue, 102, 29429-29443.
+
+Miller, J.R., H.P. White, J.M. Chen, D.R. Peddle, G. McDermid, R.A. Fournier, P. 
+Shepherd, I. Rubinstein, J. Freemantle, R. Soffer, and E. LeDrew.  1997. 
+Seasonal Change in Understory Reflectance of Boreal Forests and Influence on 
+Canopy Vegetation Indices, Journal of Geophysical Research, BOREAS Special 
+Issue, 102. 
+
+Milton, E.J. 1989. On the suitability of Kodak neutral test cards as reflectance 
+standards. International Journal of Remote Sensing, Vol. 10.
+
+Observer's Handbook 1994. Editor: Roy l. Bishop, The Royal Astronomical Society 
+of Canada.
+
+Peddle, D.R., H.P. White, R.J. Soffer, J.R. Miller, and E.F. LeDrew.  1995. 
+Reflectance Processing of Field Spectrometer Data in BOREAS. Proceedings: 17th 
+Canadian Symposium on Remote Sensing, pp. 189-194, Saskatoon, Sask..
+
+Sellers, P.and F. Hall. 1994. Boreal Ecosystem-Atmosphere Study: Experiment 
+Plan. Version 1994-3.0, NASA BOREAS Report (EXPLAN 94). 
+
+Sellers, P.and F. Hall. 1996. Boreal Ecosystem-Atmosphere Study: Experiment 
+Plan. Version 1996-2.0, NASA BOREAS Report (EXPLAN 96). 
+
+Sellers, P., F. Hall and K.F. Huemmrich. 1996. Boreal Ecosystem-Atmosphere 
+Study: 1994 Operations. NASA BOREAS Report (OPS DOC 94). 
+
+Sellers, P., F. Hall and  K.F. Huemmrich. 1997. Boreal Ecosystem-Atmosphere 
+Study: 1996 Operations. NASA BOREAS Report (OPS DOC 96). 
+
+Sellers, P., F. Hall, H. Margolis, B. Kelly, D. Baldocchi, G. den Hartog, J. 
+Cihlar, M.G. Ryan, B. Goodison, P. Crill, K.J. Ranson, D. Lettenmaier, and D.E. 
+Wickland. 1995. The boreal ecosystem-atmosphere study (BOREAS): an overview and 
+early results from the 1994 field year. Bulletin of the American Meteorological 
+Society. 76(9):1549-1577. 
+
+Sellers, P.and F. Hall. 1997. BOREAS Overview Paper. JGR Special Issue.
+
+Soffer, R.J., J.W. Harron, J.R. Miller. 1995. Characterization of Kodak Grey 
+Cards as Reflectance Reference Panels in Support of BOREAS Field Activities. 
+Proceedings: 17th Canadian Symposium on Remote Sensing, pp. 357-362, Saskatoon, 
+Sask.
+
+White, H.P., J.R. Miller, J. Chen, D.R. Peddle. 1995.  Seasonal Change in Mean 
+Understory Reflectance for BOREAS Sites: Preliminary Results., Proceedings: 17th 
+Canadian Symposium on Remote Sensing, pp. 182-187, Saskatoon, Sask.
+
+17.3  Archive/DBMS Usage Documentation
+
+None.
+
+18.  Glossary of Terms
+
+None.
+
+19. List of Acronyms
+
+ASCII   - American Standard Code for Information Interchange
+ASD     - Analytic Spectral Devices, Inc. personal field spectrometer
+BOREAS  - BOReal Ecosystem-Atmosphere Study
+BORIS   - BOREAS Information System
+BRDF    - Bidirectional Reflectance Distribution Function
+CASI    - Compact Airborne Spectrographic Imager
+CCRS    - Canada Centre for Remote Sensing
+DAAC    - Distributed Active Archive Center
+EOS     - Earth Observing System
+EOSDIS  - EOS Data and Information System
+FFC-T   - Focused Field Campaign - Thaw
+FFC-W   - Focused Field Campaign - Winter
+FOV     - Field of View
+IFC     - Intensive Field Campaign
+ISTS    - Institute for Space and Terrestrial Science
+KGC     - Kodak Grey Card
+NASA    - National Aeronautics and Space Administration
+NSA     - Northern Study Area
+OBS     - Old Black Spruce
+OJP     - Old Jack Pine
+ORNL    - Oak Ridge National Laboratory
+PANP    - Prince Albert National Park
+RSS     - Remote Sensing Science
+SE-590  - Spectron Engineering field spectroradiometer
+SSA     - Southern Study Area
+SZA     - Solar Zenith Angle
+TE      - Terrestrial Ecology
+URL     - Uniform Resource Locator
+
+20.  Document Information
+
+20.1  Document Revision Date 
+
+Written:         07-Jan-1997
+Last updated:    04-Jun-1998
+
+20.2  Document Review Date(s)
+
+BORIS Review:    26-May-1998
+Science Review:  03-Jan-1998
+
+20.3  Document ID 
+
+20.4  Citation 
+
+If this data set is referenced by another investigator, please acknowledge the 
+paper by Miller et al., (1997), listed in Section 17.
+
+20.5  Document Curator
+
+20.6  Document URL 
+
+
+Keywords:
+
+BRDF
+Reflectance
+Spectroradiometer
+
+
+
+RSS19_Undstry_refl.doc
+06/11/98
