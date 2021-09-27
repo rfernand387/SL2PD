@@ -1,0 +1,1 @@
+SL2P using 10m S2 bands only
