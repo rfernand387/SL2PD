@@ -39,7 +39,7 @@ for ivar=1:length(Output_Name)
     % Create a template Fitting Network
     net = fitnet(Regression.Var_out.(Output_Name{ivar}).Nb_Neurons(1),'trainlm');
     net.performParam.regularization = 0.1;
-    net.trainParam.show = 50;
+    net.trainParam.show = 500;
     net.trainParam.epochs = 250;
     net.trainParam.goal = 1e-3;
     net.performFcn = 'mse';  % Mean Squared Error
@@ -47,7 +47,7 @@ for ivar=1:length(Output_Name)
     net.output.processFcns = {'removeconstantrows','mapminmax'};
     net.divideFcn = 'divideind';
     net.divideMode = 'sample';
-    net.trainParam.showWindow = true;
+    net.trainParam.showWindow = false;
     
     % initialization of transfer fn
     for k = 1:length(Regression.Var_out.(Output_Name{ivar}).Transfer)

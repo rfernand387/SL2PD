@@ -47,17 +47,17 @@ end
 
 %% On génère aussi le fichier Coef_SMAC des coefficients SMAC pour les bandes considérées si version 'TOA'
 Coef_SMAC=[];
-%if strcmp(Def_Base.Toc_Toa,'Toa')
+if strcmp(Def_Base.Toc_Toa,'Toa')
     for iband=1:Nb_Bandes % boucle sur les bandes
         Coef_SMAC=cat(2,Coef_SMAC,Def_Base.Sensi_Capteur.(Band_Name{iband}).Smac.Cont);
     end
-%end
+end
 
 %% initialisations des Input
 Input.Rho_Toc=zeros(Nb_Sims,Nb_Bandes);
-%if strcmp(Def_Base.Toc_Toa,'Toa')
-Input.Rho_Toa=zeros(Nb_Sims,Nb_Bandes);
-%end
+if strcmp(Def_Base.Toc_Toa,'Toa')
+    Input.Rho_Toa=zeros(Nb_Sims,Nb_Bandes);
+end
 % les Output
 for i=1:size(Var_Name,1)
     if ~strcmp(Var_Name{i},'Multi')
@@ -68,9 +68,9 @@ end
 %% SIMULATIONS
 % h=waitbar(0,'Simulating reflectances,...');
 Rho_Toc = zeros(Nb_Sims,Nb_Bandes);
-%if strcmp(Def_Base.Toc_Toa,'Toa')
+if strcmp(Def_Base.Toc_Toa,'Toa')
     Rho_Toa = zeros(Nb_Sims,Nb_Bandes);
-%end
+end
 FCOVER = zeros(Nb_Sims,1);
 FAPAR = zeros(Nb_Sims,1);
 Albedo = zeros(Nb_Sims,1);
@@ -81,7 +81,7 @@ if (Debug)
     disp(['Simulating ' num2str(Nb_Sims) ' cases for Class ' num2str(Class)])
 end
 lambdaref = 799;
-parfor isim=1:Nb_Sims % boucle sur les simulations
+for isim=1:Nb_Sims % boucle sur les simulations
     if strcmp(Def_Base.RTM,'sail3')
         
         %  propriétés des feuilles et du sol
@@ -101,9 +101,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        %if strcmp(Def_Base.Toc_Toa,'Toa')
+        if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        %end
+        end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -147,9 +147,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        %if strcmp(Def_Base.Toc_Toa,'Toa')
+        if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        %end
+        end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -200,9 +200,9 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        %if strcmp(Def_Base.Toc_Toa,'Toa')
+        if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        %end
+        end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
@@ -218,12 +218,8 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Albedo(isim,1) = sum(R(:,3).*Ecl)/sum(Ecl); % intégration spectrale
         
         % clean up temporary directories
-        try {
-                rmdir(targetdir,'s')
-                }
-        catch
-            disp([targetdir ' could not be removed ']);
-        end
+        rmdir(targetdir,'s')
+        
     else % PROSAIL assumed
         %  propriétés des feuilles et du sol
         Rs = repmat(Law.Bs(isim)*Def_Base.(['Class_' num2str(Class)]).R_Soil.Refl(51:2051,Law.I_Soil(isim)),1,4); %  Réflectance du sol dans le cas lambertien
@@ -242,15 +238,17 @@ parfor isim=1:Nb_Sims % boucle sur les simulations
         Rho_Toc(isim,:)= R(:,1)' * Sensi;
         
         %  Réflectance Toa
-        %if strcmp(Def_Base.Toc_Toa,'Toa')
+        if strcmp(Def_Base.Toc_Toa,'Toa')
             Rho_Toa(isim,:) = smac_toc2toa(Coef_SMAC,Law.Sun_Zenith(isim),Law.View_Zenith(isim),Law.Rel_Azimuth(isim),Law.Tau550(isim),Law.H2O(isim),Law.O3(isim),Law.P(isim),Rho_Toc(isim,:));
-        %end
+        end
         
         %  fCover
         % old version (bug due to missing brackets scaling crown cover
         FCOVER(isim,1) =Law.Crown_Cover(isim).*1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim));
         % new version Richard Fernandes April 2019
         FCOVER(isim,1) =Law.Crown_Cover(isim).*(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim)));
+        % new version for clumped prosail Richard Fernandes April 2021
+        FCOVER(isim,1) =(1-exp(-kellips(Law.ALA(isim),0).*Law.LAI(isim).*Law.Crown_Cover(isim)));
         
         %  fAPAR (black-sky à 10h)
         A=PRO4SAIL(Law.N(isim),Law.Cab(isim),Car,Ant,Law.Cbp(isim),Law.Cw(isim),Law.Cdm(isim),Law.ALA(isim),0,2,Law.LAI(isim),Law.HsD(isim),Law.Crown_Cover(isim),Law.Sun_Zenith_FAPAR(isim),0,0,Rs);
@@ -265,9 +263,9 @@ end % fin boucle isim
 
 
 Input.Rho_Toc = Rho_Toc;
-%if strcmp(Def_Base.Toc_Toa,'Toa')
+if strcmp(Def_Base.Toc_Toa,'Toa')
     Input.Rho_Toa = Rho_Toa;
-%end
+end
 Output.FCOVER = FCOVER;
 Output.FAPAR = FAPAR;
 Output.Albedo = Albedo;

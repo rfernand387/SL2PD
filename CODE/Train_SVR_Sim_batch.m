@@ -42,6 +42,7 @@ for ivar=1:length(Output_Name)
     net.output.processFcns = {'removeconstantrows','mapminmax'};
     net.divideFcn = 'divideind';
     net.divideMode = 'sample';
+    net.trainParam.showWindow = false;
     
     % initialization of transfer fn
     for k = 1:length(Regression.Var_out.(Output_Name{ivar}).Transfer)

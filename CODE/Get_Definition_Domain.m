@@ -50,7 +50,6 @@ switch N
         [i1,i2,i3,i4,i5,i6,i7,i8,i9,i10] = ind2sub(size(count),find(count>0));    
         domain = i1*10^0+i2*(10^1)+i3*(10^2)+i4*(10^3)+i5*(10^4)+i6*(10^4)+i7*(10^6)+i8*(10^7)+(i9*10^8)+i10*(10^9); 
 end
-writematrix(domain,'domain.csv')
 return
 
 

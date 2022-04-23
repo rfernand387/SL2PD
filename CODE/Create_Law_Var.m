@@ -37,7 +37,11 @@ Nb_Var=size(Var_Name,1); % nombre de variables
         Ub = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Ub;
         P1 = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).P1;
         P2  = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).P2;
-        pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2),Lb,Ub);
+        if strcmp(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,'Generalized Extreme Value')
+            pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2,3.19268),Lb,Ub);
+        else
+            pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2),Lb,Ub);
+        end 
         Law.(Var_Name{ivar}) = icdf(pd,h(:,ivar-(Nb_Var-3)+1));
     end
     % reduce nb vars since we dont need atmosphere to be sampled more
@@ -84,7 +88,12 @@ for ivar = 1:Nb_Var
     Ub = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Ub;
     P1 = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).P1;
     P2  = Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).P2;
-    pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2),Lb,Ub);
+    % handle 3 paramater distributions specifally
+    if strcmp(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,'Generalized Extreme Value')
+        pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2,3.19268),Lb,Ub);
+    else
+        pd = truncate(makedist(Def_Base.(['Class_' num2str(Class)]).Var_in.(Var_Name{ivar}).Distribution,P1,P2),Lb,Ub);
+    end 
     Law.(Var_Name{ivar}) = icdf(pd,h(:,ivar));
     
     % adjust distribution range if not LAI
@@ -117,6 +126,7 @@ for ivar = 1:Nb_Var
         %squeeze range between bounds
         Law.(Var_Name{ivar})  = LbVar + (Law.(Var_Name{ivar}) -Lb) .* (UbVar-LbVar) ./ (Ub-Lb);
     end
+    
 end
 
 %% Randomisation des cas simulés (pour la sélection entre les différentes bases d'apprentissage, hyper et validation)

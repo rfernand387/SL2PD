@@ -17,7 +17,11 @@ Nb_Band=size(Input.(Ref),2); % Nombre de bandes
 Input_Noise.Cats = Input.Cats;
 Input_Noise.Angles = Input.Angles;
 
-
+%% Add noise to input angles for Sentinel 2
+%Assume no knowledge within +/-10.3degree FOV 
+% if ( Def_Base.Capteur == 'SENTINEL2' )
+%     Input_Noise.Angles(:,1) = cos(max(-10.3*pi()/180,min(10.3*pi()/180,acos(Input_Noise.Angles(:,1))+(randn(Nb_Cas,1)*20.6-10.3)*pi()/180)));
+% end
 %% Bruitage des valeurs de réflectance
 AI_rand = randn(Nb_Cas,1).*Def_Base.Bruit_Bandes.AI; %Création de la matrice de bruit additif indépendant
 MI_rand = randn(Nb_Cas,1).*Def_Base.Bruit_Bandes.MI./100; %Création de la matrice de bruit multiplicatif indépendant

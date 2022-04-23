@@ -17,9 +17,10 @@ Law_names = fieldnames(Law);
 nLaw_names = length(Law_names);
 Output_names =fieldnames(Def_Base.Regression.(Def_Base.Algorithm_Name).Var_out);
 nOutput_names = length(Output_names);
-%Input_names ={['Rho_' Def_Base.Toc_Toa] 'Angles' 'Cats'};
-Input_names ={'Rho_Toc' 'Rho_Toa' 'Angles' 'Cats'};
-nInput_names = 4;
+Input_names ={['Rho_' Def_Base.Toc_Toa] 'Angles' 'Cats'};
+nInput_names = 3;
+% Input_names ={'Rho_Toc' 'Rho_Toa' 'Angles' 'Cats'};
+% nInput_names = 4;
 
 for ivar = 1:nLaw_names
     NewLaw.(Law_names{ivar}) = [];

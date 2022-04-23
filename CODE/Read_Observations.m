@@ -4,7 +4,7 @@ function Def_Base=Read_Observations(Def_Base)
 % Fred 07/09/2009
 % Richard June 2019
 
-load Filtres_Smac_2019_04_17.mat % le fichier de definition spectrale des bandes
+load Filtres_Smac_2022_04_14.mat % le fichier de definition spectrale des bandes
 
 
 Configur = {'Single date, Location, configuration';
@@ -50,9 +50,9 @@ Def_Base.Bruit_Bandes.Add_Noise=char(y);
 for iband = 1:Nb_Bands
     Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Lambda = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).lambda;
     Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Sensi = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).sensi;
-    %if strcmp(Def_Base.Toc_Toa,'Toa')
+    if strcmp(Def_Base.Toc_Toa,'Toa')
         Def_Base.Sensi_Capteur.(Def_Base.Bandes_Utiles{iband}).Smac.Cont = Filtres_Smac.(Def_Base.Capteur).(Def_Base.Bandes_Utiles{iband}).smac.cont;
-    %end
+    end
 end
 
 %% Choix de la configuration de visée
