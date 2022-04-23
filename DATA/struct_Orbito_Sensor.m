@@ -94,12 +94,13 @@ Orbit.NOAA18.Heure         = 13.6667;
 Orbit.NOAA18.Duree         = 18;
 
 % SENTINEL2
+% scan angle updated to 20.6 by Richard Fernandes March 15, 2022
 Orbit.SENTINEL2.Altitude    = 799.790;
 Orbit.SENTINEL2.Inclinaison = 98.549*pi/180;
 Orbit.SENTINEL2.Period      = 35*1440/501;
 Orbit.SENTINEL2.Beta_0      = 0;
 Orbit.SENTINEL2.Beta_Alpha  = 35/501;
-Orbit.SENTINEL2.Scan        = 15*pi/180;
+Orbit.SENTINEL2.Scan        = (20.6*0.5)*pi/180;
 Orbit.SENTINEL2.Heure       = 10.0;
 Orbit.SENTINEL2.Duree       = 35;
 
@@ -113,10 +114,49 @@ Orbit.SPOT5HRG1.Scan          = 30*pi/180;
 Orbit.SPOT5HRG1.Heure         = 10.5;
 Orbit.SPOT5HRG1.Duree         = 26;
 
+% LANDSAT9
+Orbit.LANDSAT9.Altitude      = 705;
+Orbit.LANDSAT9.Inclinaison   = 98.2*pi/180;
+Orbit.LANDSAT9.Period        = 16*1440/369;
+Orbit.LANDSAT9.Beta_0        = 0;
+Orbit.LANDSAT9.Beta_Alpha    = 16/369;
+Orbit.LANDSAT9.Scan          = 7.5*pi/180;
+Orbit.LANDSAT9.Heure         = 10.0;
+Orbit.LANDSAT9.Duree         = 16;
+
+
+% LANDSAT8
+Orbit.LANDSAT8.Altitude      = 705;
+Orbit.LANDSAT8.Inclinaison   = 98.2*pi/180;
+Orbit.LANDSAT8.Period        = 16*1440/369;
+Orbit.LANDSAT8.Beta_0        = 0;
+Orbit.LANDSAT8.Beta_Alpha    = 16/369;
+Orbit.LANDSAT8.Scan          = 7.5*pi/180;
+Orbit.LANDSAT8.Heure         = 10.0;
+Orbit.LANDSAT8.Duree         = 16;
+
+% LANDSAT7
+Orbit.LANDSAT7.Altitude      = 705;
+Orbit.LANDSAT7.Inclinaison   = 98.2*pi/180;
+Orbit.LANDSAT7.Period        = 16*1440/369;
+Orbit.LANDSAT7.Beta_0        = 0;
+Orbit.LANDSAT7.Beta_Alpha    = 16/369;
+Orbit.LANDSAT7.Scan          = 7.5*pi/180;
+Orbit.LANDSAT7.Heure         = 10.0;
+Orbit.LANDSAT7.Duree         = 16;
+
+% WV3
+Orbit.WV3.Altitude      = 619;
+Orbit.WV3.Inclinaison   = 97.97*pi/180;
+Orbit.WV3.Period        = (96.98/99)*1440/369;
+Orbit.WV3.Beta_0        = 0;
+Orbit.WV3.Beta_Alpha    = (96.98/99)*16/369;
+Orbit.WV3.Scan          = 20*pi/180;
+Orbit.WV3.Heure         = 13.30;
+Orbit.WV3.Duree         = (96.98/99);
+
 % Other sensors
-Orbit.LANDSAT7 = Orbit.SENTINEL2;
 Orbit.RE = Orbit.SENTINEL2;
-Orbit.WV3 = Orbit.SENTINEL2;
 Orbit.PL1= Orbit.SENTINEL2;
 Orbit.PL2= Orbit.SENTINEL2;
 Orbit.INFOAG = Orbit.SENTINEL2;
