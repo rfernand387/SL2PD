@@ -182,10 +182,10 @@ for Class = 1:Def_Base.Num_Classes
             Input_Noise=Add_Noise_Input(Def_Base,Input,Class);
             
             %Determine convex hull of inputs used for this network
-            Results.(Def_Base.Algorithm_Name).Input_Convex_Hull = Get_Convex_Hull(Input.(['Rho_' Def_Base.Toc_Toa]),0.01,10);
+            Results.(Def_Base.Algorithm_Name).Input_Convex_Hull = Get_Convex_Hull([Input.(['Rho_' Def_Base.Toc_Toa])],0.01,10);
 
             %Determine coded defintion domain of inputs used for this network
-            Results.(Def_Base.Algorithm_Name).Input_Definition_Domain = Get_Definition_Domain(Input.(['Rho_' Def_Base.Toc_Toa]));
+            Results.(Def_Base.Algorithm_Name).Input_Definition_Domain = Get_Definition_Domain([Input.(['Rho_' Def_Base.Toc_Toa])],(0:0.1:1));
             
             % plot the noisy inputs amd outputs for this class and regression
 %             Plot_Matrix_InOut(Def_Base, Law, Input_Noise, Output,Class);
@@ -204,15 +204,9 @@ for Class = 1:Def_Base.Num_Classes
                         [Results.(Def_Base.Algorithm_Name).Single,Perf_Theo.(Def_Base.Algorithm_Name).Single]= Train_NNT_Sim_batch({P},Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,100000,[1 99]);
                         [Pest] = Predict_NNT_Sim_batch( {P},Input_Noise, Results.(Def_Base.Algorithm_Name).Single,Input.Cats,unique(Input.Cats),[],[])';
                         Input_Noise.P = Pest.(P);
-                        % use a power transform of P to determine subnet
-%                         Ppow = max(0,(1-Input_Noise.P)).^1;
-%                         deltaPpow = (((1-(median(Input_Noise.P)+Results.(Def_Base.Algorithm_Name).Single.(P).RMSE(3)*1)).^1 - (1-median(Input_Noise.P)).^1));
-%                         Ppowlist = (max(Ppow)):deltaPpow:(min(Ppow));
-%                         Plist = 1-Ppowlist.^1;
-%                         Plist(1) = min(0,min(Input_Noise.P,Plist(1)));
-%                         Plist(length(Plist)) = max(max(Input_Noise.P,Plist(length(Plist))),1 );
-                        use constant intervals to determine subsets of P
-                        Plist = [-0.1 , 0.1:0.05:0.9, 1.2 ];
+
+                        % use constant intervals to determine subsets of P
+                        Plist = [0.1:0.05:0.9, 1.2 ];
                         Results.(Def_Base.Algorithm_Name).Plist = Plist;
                         [Results.(Def_Base.Algorithm_Name).(P),Perf_Theo.(Def_Base.Algorithm_Name).(P)]= Train_NNT_Sim_batch_P([Def_Base.Var_out], Input_Noise,Output,Regression,Input.Cats,Def_Base.Regression.(Def_Base.Algorithm_Name).Num_Batches,Results.(Def_Base.Algorithm_Name).Plist);
                     end                    
@@ -258,7 +252,7 @@ for Class = 1:Def_Base.Num_Classes
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual');
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
                 load(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
-                if ( isempty(ResultsActual ) || isempty( Perf_Actual )  )
+                if ( isempty(ResultsActual ) || isempty( Perf_Actual ) || isempty( ResultsIncertitudes) || isempty( Perf_Incertitudes ) )
                     % force error to make the database
                     ME = MException('MyComponent:noSuchVariable', ...
                         'Variable %s not found', inputstr);
@@ -296,13 +290,13 @@ for Class = 1:Def_Base.Num_Classes
             try
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsActual','-append');
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual','-append');
-%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes','-append');
-%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes','-append');
+                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes','-append');
+                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes','-append');
             catch
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsActual');
                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Actual');
-%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
-%                 save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
+                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','ResultsIncertitudes');
+                save(fullfile([Def_Base.Report_Dir '\Class_' num2str(Class)],[char(Def_Base.Name) '.mat']),'-mat','Perf_Incertitudes');
             end
            
             if (Debug )
