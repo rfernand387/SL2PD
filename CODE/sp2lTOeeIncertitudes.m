@@ -1,9 +1,9 @@
-function sp2lTOeeIncertitudes(Def_Base,ResultsIncertitudes)
+function sp2lTOeeIncertitudes(P,Def_Base,ResultsIncertitudes)
 %% exports a table of all subnets for a given partitioning for use in GEE
 tabledata = [];
     
 for ivar=1:length(Def_Base.Var_out)
-    NET =  Results.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name).(Def_Base.Var_out{ivar}).NET;
+    NET =  ResultsIncertitudes.(Def_Base.Algorithm_Name).(Def_Base.Validation_Name).(Def_Base.Var_out{ivar}).NET;
     netdata = [0 0 ivar 0 1];
     xmin = NET.inputs{1,1}.processSettings{1,1}.xmin;
     xmax = NET.inputs{1,1}.processSettings{1,1}.xmax;
